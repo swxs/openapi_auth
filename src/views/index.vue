@@ -49,7 +49,7 @@
 </template>
 
 <script>
-import { register, login, logout, refreshToken } from '../api/Auth.js'
+import { register, login, logout, refreshToken } from '../api/auth.js'
 
 export default {
   name: 'index',

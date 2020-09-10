@@ -1,36 +1,22 @@
+import Vue from 'vue'
+
 const REGISTER_URL = 'api/authorize/user_auth/'
 const LOGIN_URL = 'api/authorize/token/auth/'
 const LOGOUT_URL = ''
 const REFRESH_TOKEN_URL = 'api/authorize/token/refresh/'
 
-export const register = (data) => {
-  return new Promise(function(resolve, reject) {
-    window.axios.post(`${REGISTER_URL}`, data).then((response) => {
-      resolve(response)
-    })
-  })
+export async function register(params) {
+  return Vue.axios.post(`${REGISTER_URL}`, { params })
 }
 
-export const login = (data) => {
-  return new Promise(function(resolve, reject) {
-    window.axios.post(`${LOGIN_URL}`, data).then((response) => {
-      resolve(response)
-    })
-  })
+export async function login(params) {
+  return Vue.axios.post(`${LOGIN_URL}`, { params })
 }
 
-export const logout = (data) => {
-  return new Promise(function(resolve, reject) {
-    window.axios.post(`${LOGOUT_URL}`, data).then((response) => {
-      resolve(response)
-    })
-  })
+export async function logout(params) {
+  return Vue.axios.post(`${LOGOUT_URL}`, { params })
 }
 
-export const refreshToken = (data) => {
-  return new Promise(function(resolve, reject) {
-    window.axios.post(`${REFRESH_TOKEN_URL}`, data).then((response) => {
-      resolve(response)
-    })
-  })
+export async function refreshToken(params) {
+  return Vue.axios.post(`${REFRESH_TOKEN_URL}`, { params })
 }
