@@ -1,5 +1,5 @@
-const TokenKey = 'token'
-const RefreshTokenKey = 'refreshToken'
+const TokenKey = 'home_token'
+const RefreshTokenKey = 'home_refreshToken'
 
 export function getToken() {
   let token = localStorage.getItem(TokenKey)

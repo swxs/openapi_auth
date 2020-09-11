@@ -49,7 +49,15 @@
 </template>
 
 <script>
-import { register, login, logout, refreshToken } from '../api/auth.js'
+import { register, login, logout, refreshToken } from '../api/auth'
+import {
+  getToken,
+  getRefreshToken,
+  setToken,
+  setRefreshToken,
+  removeToken,
+  removeRefreshToken,
+} from '../utils/auth'
 
 export default {
   name: 'index',
@@ -58,8 +66,8 @@ export default {
       loadingState: false,
       user_auth: {
         ttype: 2,
-        identifier: '',
-        credential: '',
+        identifier: '466565029@qq.com',
+        credential: 'qtreytqrwe1',
       },
       loginDisabled: false,
     }
@@ -82,10 +90,10 @@ export default {
         if (code == 0) {
           let token = data.token
           let refreshToken = data.refresh_token
-          let userInfo = base2obj(token) // base64解码,获取用户信息
-          this.loadingState = false // 取消请求加载状态
           setToken(token)
           setRefreshToken(refreshToken)
+          let userInfo = base2obj(token) // base64解码,获取用户信息
+          this.loadingState = false // 取消请求加载状态          
           if (this.redirect) {
             location.href = this.redirect
           } else {
