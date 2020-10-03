@@ -19,6 +19,10 @@ module.exports = {
     'no-unused-vars': [
       'warn',
       { vars: 'local', args: 'none', ignoreRestSiblings: false }
-    ]
+    ],
+    "parserOptions": {
+      "ecmaVersion": 7,
+      "sourceType": "module"
+    }
   }
 }

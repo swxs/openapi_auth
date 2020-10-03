@@ -1,51 +1,56 @@
 <template>
-  <el-container class="container">
-    <div class="input-group">
-      <div class="org-code-input">
-        <input
-          id="identifier"
-          v-model.trim="user_auth.identifier"
-          type="text"
-          class="input-text"
-          placeholder="请输入手机号"
-          @blur="verify('identifier')"
-          @focus="verify('identifier')"
-        />
-      </div>
-    </div>
-    <div ref="identifier" class="error-wrap">
-      <div class="error-text">请输入手机号</div>
-    </div>
-    <div class="input-group">
-      <div class="org-code-input">
-        <input
-          id="credential"
-          v-model.trim="user_auth.credential"
-          type="password"
-          class="input-text"
-          placeholder="请输入密码"
-          @blur="verify('credential')"
-          @focus="verify('credential')"
-        />
-      </div>
-    </div>
-    <div ref="credential" class="error-wrap">
-      <div class="error-text">请输入密码</div>
-    </div>
-    <el-button
-      push
-      :loading="loadingState"
-      type="primary"
-      :disabled="
-        !user_auth.identifier || !user_auth.credential || loginDisabled
-      "
-      class="btn"
-      label="登录"
-      @click="doLogin"
-    >
-      登录
-    </el-button>
-  </el-container>
+  <el-form
+    ref="form"
+    class="form"
+    :rules="rules"
+    :model="logins"
+    label-width="80px"
+  >
+    <el-form-item label="邮箱:">
+      <el-input
+        type="text"
+        id="identifier"
+        class="input-text"
+        v-model.trim="logins.identifier"
+        placeholder="请输入邮箱"
+        @blur="verify('identifier')"
+        @focus="verify('identifier')"
+      >
+      </el-input>
+      <span ref="identifier" class="error-wrap">
+        <span class="error-text">请输入邮箱!</span>
+      </span>
+    </el-form-item>
+
+    <el-form-item label="密码:">
+      <el-input
+        type="password"
+        id="credential"
+        class="input-text"
+        v-model.trim="logins.credential"
+        placeholder="请输入密码"
+        @blur="verify('credential')"
+        @focus="verify('credential')"
+      >
+      </el-input>
+      <span ref="credential" class="error-wrap">
+        <span class="error-text">请输入密码!</span>
+      </span>
+    </el-form-item>
+
+    <el-form-item>
+      <el-button
+        label="登录"
+        type="primary"
+        class="btn"
+        :loading="loadingState"
+        :disabled="!logins.identifier || !logins.credential || loginDisabled"
+        @click="doLogin"
+      >
+        登录
+      </el-button>
+    </el-form-item>
+  </el-form>
 </template>
 
 <script>
@@ -57,6 +62,7 @@ import {
   setRefreshToken,
   removeToken,
   removeRefreshToken,
+  base2obj,
 } from '../utils/auth'
 
 export default {
@@ -64,28 +70,39 @@ export default {
   data() {
     return {
       loadingState: false,
-      user_auth: {
+      logins: {
         ttype: 2,
         identifier: '466565029@qq.com',
         credential: 'qtreytqrwe1',
       },
+      rules: {
+        identifier: [
+          { required: true, message: '请输入邮箱!', trigger: 'blur' },
+        ],
+        credential: [
+          { required: true, message: '请输入密码!', trigger: 'blur' },
+        ],
+      },
       loginDisabled: false,
     }
+  },
+  mounted() {
+    // 在外部vue的window上添加postMessage的监听，并且绑定处理函数handleMessage
+    window.addEventListener('message', this.handleMessage)
   },
   computed: {},
   components: {},
   created() {},
-  async mounted() {},
   methods: {
     // 登录接口
     async doLogin() {
       this.verify('identifier')
       this.verify('credential')
-      if (!this.user_auth.identifier || !this.user_auth.credential) {
+      if (!this.logins.identifier || !this.logins.credential) {
         return false
       } else {
         this.loadingState = true // 设置请求加载状态
-        let loginInfo = { ...this.user_auth }
+        let loginInfo = { ...this.logins }
         let { code, data, msg } = await login(loginInfo)
         if (code == 0) {
           let token = data.token
@@ -93,12 +110,11 @@ export default {
           setToken(token)
           setRefreshToken(refreshToken)
           let userInfo = base2obj(token) // base64解码,获取用户信息
-          this.loadingState = false // 取消请求加载状态          
-          if (this.redirect) {
-            location.href = this.redirect
-          } else {
-            location.href = '/home'
-          }
+          this.sendMessage({
+            token: token,
+            refreshToken: refreshToken,
+          })
+          this.loadingState = false // 取消请求加载状态
         } else if (code === 212) {
           this.loadingState = false
           this.loginDisabled = true
@@ -110,10 +126,34 @@ export default {
       }
     },
     verify(key) {
-      if (!this.user_auth[key]) {
+      if (!this.logins[key]) {
         this.$refs[key].classList.add('is-show')
       } else {
         this.$refs[key].classList.remove('is-show')
+      }
+    },
+    sendMessage(data) {
+      console.log('child send')
+      // 外部vue向iframe内部传数据
+      window.parent.postMessage(
+        {
+          cmd: 'returnToken',
+          params: data,
+        },
+        '*'
+      )
+    },
+    async handleMessage(event) {
+      // 根据上面制定的结构来解析iframe内部发回来的数据
+      const data = event.data
+      console.log(`child get [${data.cmd}]: ${data.params}`, data)
+      switch (data.cmd) {
+        case 'getToken':
+          // 业务逻辑
+          this.sendMessage({
+            token: getToken(),
+            refreshToken: getRefreshToken(),
+          })
       }
     },
   },
@@ -122,7 +162,14 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-.container {
-  width: 580px;
+.form {
+  margin-top: 20px;
+  .el-input {
+    width: 240px;
+  }
+  .error-wrap {
+    color: #f98a8a;
+    margin-left: 20px;
+  }
 }
 </style>
