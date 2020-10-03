@@ -14,14 +14,14 @@ export default {
   components: {},
   methods: {
     sendMessage(data) {
-      console.log('child send')
+      console.log(`child send: `, data)
       // 外部vue向iframe内部传数据
       window.parent.postMessage(data, '*')
     },
     async handleMessage(event) {
       // 根据上面制定的结构来解析iframe内部发回来的数据
       const data = event.data
-      console.log(`child get [${data.cmd}]: ${data.params}`, data)
+      console.log(`child get: `, data)
       switch (data.cmd) {
         case 'getToken':
           // 业务逻辑
@@ -79,7 +79,7 @@ export default {
     })
   },
   beforeDestroy() {
-    window.removeventListener('message')
+    window.removeEventListener('message', this.handleMessage)
   },
 }
 </script>
