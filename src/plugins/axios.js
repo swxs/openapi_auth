@@ -2,20 +2,6 @@
 
 import Vue from 'vue'
 import axios from 'axios'
-import {
-  getToken,
-  getRefreshToken,
-  setToken,
-  setRefreshToken,
-  removeToken,
-  removeRefreshToken,
-} from '../utils/auth'
-
-function goHome() {
-  removeToken()
-  removeRefreshToken()
-  window.location.href = '/login'
-}
 
 let config = {
   // baseURL: process.env.baseURL || process.env.apiUrl || ""
@@ -33,14 +19,6 @@ service.interceptors.request.use(
       config.params._ = new Date().getTime()
     }
 
-    const token = getToken()
-    const refreshToken = getRefreshToken()
-    if (token) {
-      config.headers.common['Authorization'] = `Bearer ${token}`
-    } else {
-      config.headers.common['Authorization'] = `Bearer ${refreshToken}`
-    }
-
     return config
   },
   (error) => {
@@ -56,12 +34,6 @@ service.interceptors.response.use(
     } else {
       let data = response.data
       if (data.code === 0) {
-        return Promise.resolve(data)
-      } else if (data.code === 101) {
-        removeToken()
-        return Promise.resolve(data)
-      } else if (data.code === 113) {
-        removeToken()
         return Promise.resolve(data)
       } else {
         return Promise.resolve(data)

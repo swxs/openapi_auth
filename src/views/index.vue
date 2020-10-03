@@ -44,7 +44,7 @@
         type="primary"
         class="btn"
         :loading="loadingState"
-        :disabled="!logins.identifier || !logins.credential || loginDisabled"
+        :disabled="!logins.identifier || !logins.credential"
         @click="doLogin"
       >
         登录
@@ -84,7 +84,6 @@ export default {
           { required: true, message: '请输入密码!', trigger: 'blur' },
         ],
       },
-      loginDisabled: false,
     }
   },
   computed: {},
@@ -111,7 +110,6 @@ export default {
           this.loadingState = false // 取消请求加载状态
         } else if (code === 212) {
           this.loadingState = false
-          this.loginDisabled = true
           this.$message.error('用户名或密码不正确')
         } else {
           this.loadingState = false

@@ -16,13 +16,7 @@ export default {
     sendMessage(data) {
       console.log('child send')
       // 外部vue向iframe内部传数据
-      window.parent.postMessage(
-        {
-          cmd: 'returnToken',
-          params: data,
-        },
-        '*'
-      )
+      window.parent.postMessage(data, '*')
     },
     async handleMessage(event) {
       // 根据上面制定的结构来解析iframe内部发回来的数据
@@ -34,29 +28,58 @@ export default {
           let token = getToken()
           if (token) {
             this.sendMessage({
-              token: token,
+              cmd: 'returnToken',
+              params: {
+                token: token,
+              },
             })
           } else {
             let refresh_token = getRefreshToken()
             if (refresh_token) {
-              let data = await refreshToken()
-              let token = data.data.token
-              setToken(token)
-              this.sendMessage({
-                token: token,
+              let data = await refreshToken({
+                refresh_token: refresh_token,
               })
+              if (data.code === 0) {
+                let token = data.data.token
+                setToken(token)
+                this.sendMessage({
+                  cmd: 'returnToken',
+                  params: {
+                    token: token,
+                  },
+                })
+              } else {
+                this.sendMessage({
+                  cmd: 'returnToken',
+                  params: {
+                    token: null,
+                  },
+                })
+              }
             } else {
               this.sendMessage({
-                token: null,
+                cmd: 'returnToken',
+                params: {
+                  token: null,
+                },
               })
             }
           }
       }
     },
   },
-  mounted() {
+  beforeMount() {
     // 在外部vue的window上添加postMessage的监听，并且绑定处理函数handleMessage
     window.addEventListener('message', this.handleMessage)
+  },
+  mounted() {
+    this.sendMessage({
+      cmd: 'ready',
+      params: {},
+    })
+  },
+  beforeDestroy() {
+    window.removeventListener('message')
   },
 }
 </script>
