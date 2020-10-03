@@ -3,12 +3,30 @@ const RefreshTokenKey = 'home_refreshToken'
 
 export function getToken() {
   let token = localStorage.getItem(TokenKey)
-  return token
+  if (!token) {
+    return null
+  }
+  let data = base2obj(token)
+  if (data.exp * 1000 > new Date().valueOf()) {
+    return token
+  } else {
+    localStorage.removeItem(TokenKey)
+    return null
+  }
 }
 
 export function getRefreshToken() {
   let refreshToken = localStorage.getItem(RefreshTokenKey)
-  return refreshToken
+  if (!refreshToken) {
+    return null
+  }
+  let data = base2obj(refreshToken)
+  if (data.exp * 1000 > new Date().valueOf()) {
+    return refreshToken
+  } else {
+    localStorage.removeItem(RefreshTokenKey)
+    return null
+  }
 }
 
 export function setToken(token) {
@@ -30,7 +48,7 @@ export function removeRefreshToken() {
 export function base2obj(str) {
   let baseStr = str.split('.')[1]
   if (!baseStr) {
-    return ''
+    return {}
   }
   return JSON.parse(window.atob(baseStr))
 }

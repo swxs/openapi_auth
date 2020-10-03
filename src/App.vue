@@ -5,6 +5,62 @@
   </div>
 </template>
 
+<script>
+import { refreshToken } from './api/auth'
+import { getToken, getRefreshToken, setToken } from './utils/auth'
+
+export default {
+  name: 'App',
+  components: {},
+  methods: {
+    sendMessage(data) {
+      console.log('child send')
+      // 外部vue向iframe内部传数据
+      window.parent.postMessage(
+        {
+          cmd: 'returnToken',
+          params: data,
+        },
+        '*'
+      )
+    },
+    async handleMessage(event) {
+      // 根据上面制定的结构来解析iframe内部发回来的数据
+      const data = event.data
+      console.log(`child get [${data.cmd}]: ${data.params}`, data)
+      switch (data.cmd) {
+        case 'getToken':
+          // 业务逻辑
+          let token = getToken()
+          if (token) {
+            this.sendMessage({
+              token: token,
+            })
+          } else {
+            let refresh_token = getRefreshToken()
+            if (refresh_token) {
+              let data = await refreshToken()
+              let token = data.data.token
+              setToken(token)
+              this.sendMessage({
+                token: token,
+              })
+            } else {
+              this.sendMessage({
+                token: null,
+              })
+            }
+          }
+      }
+    },
+  },
+  mounted() {
+    // 在外部vue的window上添加postMessage的监听，并且绑定处理函数handleMessage
+    window.addEventListener('message', this.handleMessage)
+  },
+}
+</script>
+
 <style lang="less">
 @import './assets/style/base.less';
 @import './assets/style/common.less';

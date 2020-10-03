@@ -67,6 +67,7 @@ import {
 
 export default {
   name: 'index',
+  components: {},
   data() {
     return {
       loadingState: false,
@@ -86,13 +87,7 @@ export default {
       loginDisabled: false,
     }
   },
-  mounted() {
-    // 在外部vue的window上添加postMessage的监听，并且绑定处理函数handleMessage
-    window.addEventListener('message', this.handleMessage)
-  },
   computed: {},
-  components: {},
-  created() {},
   methods: {
     // 登录接口
     async doLogin() {
@@ -112,7 +107,6 @@ export default {
           let userInfo = base2obj(token) // base64解码,获取用户信息
           this.sendMessage({
             token: token,
-            refreshToken: refreshToken,
           })
           this.loadingState = false // 取消请求加载状态
         } else if (code === 212) {
@@ -143,20 +137,9 @@ export default {
         '*'
       )
     },
-    async handleMessage(event) {
-      // 根据上面制定的结构来解析iframe内部发回来的数据
-      const data = event.data
-      console.log(`child get [${data.cmd}]: ${data.params}`, data)
-      switch (data.cmd) {
-        case 'getToken':
-          // 业务逻辑
-          this.sendMessage({
-            token: getToken(),
-            refreshToken: getRefreshToken(),
-          })
-      }
-    },
   },
+  created() {},
+  mounted() {},
 }
 </script>
 
