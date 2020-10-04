@@ -73,8 +73,8 @@ export default {
       loadingState: false,
       logins: {
         ttype: 2,
-        identifier: '466565029@qq.com',
-        credential: 'qtreytqrwe1',
+        identifier: '',
+        credential: '',
       },
       rules: {
         identifier: [
