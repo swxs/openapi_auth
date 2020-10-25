@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <!--所有的页面都将加载到此处,app.vue只提供一个容器-->
+    <!--所有的页面都将加载到此处-->
     <router-view></router-view>
   </div>
 </template>
@@ -67,6 +67,9 @@ export default {
           }
       }
     },
+  },
+  created() {
+    document.title = "登陆中心";
   },
   beforeMount() {
     // 在外部vue的window上添加postMessage的监听，并且绑定处理函数handleMessage

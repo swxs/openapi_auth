@@ -3,11 +3,7 @@
 import Vue from 'vue'
 import axios from 'axios'
 
-let config = {
-  // baseURL: process.env.baseURL || process.env.apiUrl || ""
-  // timeout: 60 * 1000, // Timeout
-  // withCredentials: true, // Check cross-site Access-Control
-}
+let config = {}
 
 const service = axios.create(config)
 
@@ -36,6 +32,7 @@ service.interceptors.response.use(
       if (data.code === 0) {
         return Promise.resolve(data)
       } else {
+        console.log(data)
         return Promise.resolve(data)
       }
     }
