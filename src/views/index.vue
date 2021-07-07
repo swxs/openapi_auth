@@ -38,6 +38,22 @@
       </span>
     </el-form-item>
 
+    <span class="content_block WD_w1 MB_w2 tc">
+      <i
+        class="iconfont icon-shouji"
+        title="手机号登录"
+        @click="copy(lock.id, lock.password, lock.used)"
+      ></i>
+    </span>
+
+    <span class="content_block WD_w1 MB_w2 tc">
+      <i
+        class="iconfont icon-news-fill is-use"
+        title="邮箱登录"
+        @click="copy(lock.id, lock.password, lock.used)"
+      ></i>
+    </span>
+
     <el-form-item>
       <el-button
         label="登录"
