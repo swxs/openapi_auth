@@ -183,7 +183,7 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less" scoped>
+<style lang="less">
 .ttype_changer {
   margin-left: 20px;
   cursor: pointer;
