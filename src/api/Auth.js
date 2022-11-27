@@ -1,9 +1,9 @@
 import Vue from 'vue'
 
-const REGISTER_URL = 'api/authorize/user_auth/'
-const LOGIN_URL = 'api/authorize/token/auth/'
+const REGISTER_URL = 'api/system/user_auth'
+const LOGIN_URL = 'api/system/auth/refresh_token'
 const LOGOUT_URL = ''
-const REFRESH_TOKEN_URL = 'api/authorize/token/refresh/'
+const REFRESH_TOKEN_URL = 'api/system/auth/token'
 
 export async function register(data) {
   return Vue.axios.post(`${REGISTER_URL}`, data)

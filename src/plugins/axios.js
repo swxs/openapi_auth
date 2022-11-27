@@ -38,8 +38,10 @@ service.interceptors.response.use(
     }
   },
   (error) => {
-    console.log(error)
-    return Promise.reject(error)
+    return Promise.resolve({
+      code: error.response.status,
+      msg: error.response.data.detail,
+    })
   }
 )
 

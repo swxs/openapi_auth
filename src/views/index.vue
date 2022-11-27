@@ -8,11 +8,11 @@
         >密码登录</span
       >
       <!-- 短信登录 -->
-      <span
+      <!-- <span
         :class="{ ttype_changer: true, active: ttype === 1 }"
         @click="change(1)"
         >短信登录</span
-      >
+      > -->
     </div>
 
     <el-form ref="form" class="form" :rules="rules" :model="logins">
@@ -22,13 +22,13 @@
           id="identifier"
           class="input-text"
           v-model.trim="logins.identifier"
-          placeholder="你的手机号/邮箱"
+          placeholder="你的用户名"
           @blur="verify('identifier')"
           @focus="verify('identifier')"
         >
         </el-input>
         <div ref="identifier" class="error-wrap">
-          <span class="error-text">请输入注册时用的邮箱或者手机号</span>
+          <span class="error-text">请输入用户名</span>
         </div>
       </el-form-item>
 
@@ -76,14 +76,20 @@
           type="primary"
           class="btn"
           id="SignIn"
-          :loading="loadingState"
+          :loading="loadingSignIn"
           :disabled="!logins.identifier || !logins.credential"
           @click="SignIn"
         >
           登录
         </el-button>
 
-        <el-button label="注册" class="btn" id="SignUp" @click="SignUp">
+        <el-button
+          label="注册"
+          class="btn"
+          id="SignUp"
+          :loading="loadingSignUp"
+          @click="SignUp"
+        >
           注册
         </el-button>
       </el-form-item>
@@ -108,7 +114,8 @@ export default {
   components: {},
   data() {
     return {
-      loadingState: false,
+      loadingSignIn: false,
+      loadingSignUp: false,
       ttype: 2,
       logins: {
         identifier: '',
@@ -134,7 +141,7 @@ export default {
       if (!this.logins.identifier || !this.logins.credential) {
         return false
       } else {
-        this.loadingState = true // 设置请求加载状态
+        this.loadingSignIn = true // 设置请求加载状态
         let loginInfo = { ttype: this.ttype, ...this.logins }
         let { code, data, msg } = await login(loginInfo)
         if (code == 0) {
@@ -146,15 +153,39 @@ export default {
           this.sendMessage({
             token: token,
           })
-        } else if (code === 212) {
-          this.$message.error('用户名或密码不正确')
+        } else if (code === 403) {
+          this.$message.error(msg)
         } else {
           this.$message.error('用户名或密码不正确')
         }
       }
-      this.loadingState = false
+      this.loadingSignIn = false
     },
-    async SignUp() {},
+    async SignUp() {
+      this.verify('identifier')
+      this.verify('credential')
+      if (!this.logins.identifier || !this.logins.credential) {
+        return false
+      } else {
+        this.loadingSignUp = true // 设置请求加载状态
+        let loginInfo = { ttype: this.ttype, ...this.logins }
+        let { code_, data_, msg_ } = await register(loginInfo)
+        let { code, data, msg } = await login(loginInfo)
+        if (code == 0) {
+          let token = data.token
+          let refreshToken = data.refresh_token
+          setToken(token)
+          setRefreshToken(refreshToken)
+          let userInfo = base2obj(token) // base64解码,获取用户信息
+          this.sendMessage({
+            token: token,
+          })
+        } else {
+          this.$message.error('注册失败')
+        }
+      }
+      this.loadingSignUp = false
+    },
     change(ttype) {
       this.ttype = ttype
     },
