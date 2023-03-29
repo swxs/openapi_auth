@@ -15,6 +15,20 @@ export function getToken() {
   }
 }
 
+export function getTokenInfo() {
+  let token = localStorage.getItem(TokenKey)
+  if (!token) {
+    return {}
+  }
+  let data = base2obj(token)
+  if (data.exp * 1000 > new Date().valueOf()) {
+    return data
+  } else {
+    localStorage.removeItem(TokenKey)
+    return {}
+  }
+}
+
 export function getRefreshToken() {
   let refreshToken = localStorage.getItem(RefreshTokenKey)
   if (!refreshToken) {

@@ -5,9 +5,9 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "DEV[AUTH]",
             "type": "node",
             "request": "launch",
-            "name": "auth",
             "runtimeExecutable": "yarn",
             "cwd": "${workspaceFolder}",
             "runtimeArgs": ["dev"],
