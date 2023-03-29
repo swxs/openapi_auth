@@ -23,6 +23,7 @@ jobs:
         run: |
           npm install -g yarn
           yarn
+          yarn build
 
       - name: login aliyuncs
         uses: docker/login-action@v2
