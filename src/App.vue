@@ -7,7 +7,7 @@
 
 <script>
 import { refreshToken } from './api/auth'
-import { getToken, getRefreshToken, setToken } from './utils/auth'
+import { getToken, getRefreshToken, setToken, removeToken, removeRefreshToken } from './utils/auth'
 
 export default {
   name: 'App',
@@ -65,6 +65,11 @@ export default {
               })
             }
           }
+          break
+        case 'logout':
+          removeToken()
+          removeRefreshToken()
+          break
       }
     },
   },
