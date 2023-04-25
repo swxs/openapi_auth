@@ -143,7 +143,8 @@ export default {
       } else {
         this.loadingSignIn = true // 设置请求加载状态
         let loginInfo = { ttype: this.ttype, ...this.logins }
-        let { code, data, msg } = await login(loginInfo)
+        let { status, code, data, message } = await login(loginInfo)
+        console.log(status, code, data, message)
         if (code == 0) {
           let token = data.token
           let refreshToken = data.refresh_token
@@ -153,10 +154,8 @@ export default {
           this.sendMessage({
             token: token,
           })
-        } else if (code === 403) {
-          this.$message.error(msg)
         } else {
-          this.$message.error('用户名或密码不正确')
+          this.$message.error(message)
         }
       }
       this.loadingSignIn = false

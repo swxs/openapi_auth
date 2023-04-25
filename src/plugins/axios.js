@@ -32,15 +32,16 @@ service.interceptors.response.use(
       if (data.code === 0) {
         return Promise.resolve(data)
       } else {
-        console.log(data)
+        console.log('data: ', data)
         return Promise.resolve(data)
       }
     }
   },
   (error) => {
+    console.log(error.response)
     return Promise.resolve({
-      code: error.response.status,
-      msg: error.response.data.detail,
+      status: error.response.status,
+      ...error.response.data,
     })
   }
 )
