@@ -19,6 +19,11 @@ jobs:
       - name: install nodejs
         uses: actions/setup-node@v1
 
+      - name: Create .env file from secrets
+        run: |
+          echo "VUE_APP_AUTH_SERVER_URL=${{ secrets.VUE_APP_AUTH_SERVER_URL || 'http://127.0.0.1:8090' }}" > .env
+          cat .env
+
       - name: generate dist folder
         run: |
           npm install -g yarn
