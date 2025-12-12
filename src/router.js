@@ -8,8 +8,13 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'home',
+      name: 'login',
       component: Index,
+    },
+    {
+      path: '/authorize',
+      name: 'authorize',
+      component: () => import('./views/authorize.vue'),
     },
     {
       path: '*',

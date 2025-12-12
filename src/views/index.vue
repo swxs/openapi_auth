@@ -98,14 +98,10 @@
 </template>
 
 <script>
-import { register, login, logout, refreshToken } from '../api/auth'
+import { register, login } from '../api/auth'
 import {
-  getToken,
-  getRefreshToken,
   setToken,
   setRefreshToken,
-  removeToken,
-  removeRefreshToken,
   base2obj,
 } from '../utils/auth'
 
@@ -123,17 +119,39 @@ export default {
       },
       rules: {
         identifier: [
-          { required: true, message: '请输入邮箱!', trigger: 'blur' },
+          { required: true, message: '请输入用户名!', trigger: 'blur' },
         ],
         credential: [
           { required: true, message: '请输入密码!', trigger: 'blur' },
         ],
       },
       is_remember: true,
+      // OAuth参数
+      oauthParams: {
+        client_id: null,
+        redirect_uri: null,
+        state: null,
+        scope: null,
+      },
     }
   },
-  computed: {},
+  computed: {
+    // 是否是OAuth登录流程
+    isOAuthFlow() {
+      return !!(this.oauthParams.client_id && this.oauthParams.redirect_uri)
+    },
+  },
   methods: {
+    // 从URL参数中获取OAuth参数
+    parseOAuthParams() {
+      const urlParams = new URLSearchParams(window.location.search)
+      this.oauthParams = {
+        client_id: urlParams.get('client_id'),
+        redirect_uri: urlParams.get('redirect_uri'),
+        state: urlParams.get('state'),
+        scope: urlParams.get('scope') || 'read write',
+      }
+    },
     // 登录接口
     async SignIn() {
       this.verify('identifier')
@@ -141,24 +159,45 @@ export default {
       if (!this.logins.identifier || !this.logins.credential) {
         return false
       } else {
-        this.loadingSignIn = true // 设置请求加载状态
-        let loginInfo = { ttype: this.ttype, ...this.logins }
-        let { status, code, data, message } = await login(loginInfo)
-        console.log(status, code, data, message)
-        if (code == 0) {
-          let token = data.token
-          let refreshToken = data.refresh_token
-          setToken(token)
-          setRefreshToken(refreshToken)
-          let userInfo = base2obj(token) // base64解码,获取用户信息
-          this.sendMessage({
-            token: token,
-          })
-        } else {
-          this.$message.error(message)
+        this.loadingSignIn = true
+        try {
+          let loginInfo = { ttype: this.ttype, ...this.logins }
+          let { status, code, data, message } = await login(loginInfo)
+          
+          if (code == 0) {
+            let token = data.token
+            let refreshToken = data.refresh_token
+            setToken(token)
+            setRefreshToken(refreshToken)
+            let userInfo = base2obj(token)
+            
+            // 如果是OAuth流程，重定向到授权确认页面
+            if (this.isOAuthFlow) {
+              // 重定向到授权确认页面，带上OAuth参数
+              const params = new URLSearchParams({
+                client_id: this.oauthParams.client_id,
+                redirect_uri: this.oauthParams.redirect_uri,
+                state: this.oauthParams.state,
+                scope: this.oauthParams.scope,
+              })
+              // 使用replace避免浏览器历史记录问题
+              this.$router.replace(`/authorize?${params.toString()}`)
+            } else {
+              // 非OAuth流程，显示成功消息
+              this.$message.success('登录成功')
+              // 可以重定向到其他页面
+              // this.$router.push('/')
+            }
+          } else {
+            this.$message.error(message || '登录失败')
+          }
+        } catch (error) {
+          console.error('登录失败:', error)
+          this.$message.error('登录失败，请重试')
+        } finally {
+          this.loadingSignIn = false
         }
       }
-      this.loadingSignIn = false
     },
     async SignUp() {
       this.verify('identifier')
@@ -166,24 +205,45 @@ export default {
       if (!this.logins.identifier || !this.logins.credential) {
         return false
       } else {
-        this.loadingSignUp = true // 设置请求加载状态
-        let loginInfo = { ttype: this.ttype, ...this.logins }
-        let { code_, data_, msg_ } = await register(loginInfo)
-        let { code, data, msg } = await login(loginInfo)
-        if (code == 0) {
-          let token = data.token
-          let refreshToken = data.refresh_token
-          setToken(token)
-          setRefreshToken(refreshToken)
-          let userInfo = base2obj(token) // base64解码,获取用户信息
-          this.sendMessage({
-            token: token,
-          })
-        } else {
-          this.$message.error('注册失败')
+        this.loadingSignUp = true
+        try {
+          let loginInfo = { ttype: this.ttype, ...this.logins }
+          let { code: registerCode, data: registerData, msg: registerMsg } = await register(loginInfo)
+          
+          if (registerCode == 0) {
+            // 注册成功后自动登录
+            let { code, data, msg } = await login(loginInfo)
+            if (code == 0) {
+              let token = data.token
+              let refreshToken = data.refresh_token
+              setToken(token)
+              setRefreshToken(refreshToken)
+              
+              // 如果是OAuth流程，重定向到授权确认页面
+              if (this.isOAuthFlow) {
+                const params = new URLSearchParams({
+                  client_id: this.oauthParams.client_id,
+                  redirect_uri: this.oauthParams.redirect_uri,
+                  state: this.oauthParams.state,
+                  scope: this.oauthParams.scope,
+                })
+                this.$router.replace(`/authorize?${params.toString()}`)
+              } else {
+                this.$message.success('注册并登录成功')
+              }
+            } else {
+              this.$message.error('注册成功，但登录失败')
+            }
+          } else {
+            this.$message.error(registerMsg || '注册失败')
+          }
+        } catch (error) {
+          console.error('注册失败:', error)
+          this.$message.error('注册失败，请重试')
+        } finally {
+          this.loadingSignUp = false
         }
       }
-      this.loadingSignUp = false
     },
     change(ttype) {
       this.ttype = ttype
@@ -195,19 +255,11 @@ export default {
         this.$refs[key].classList.remove('is-show')
       }
     },
-    sendMessage(data) {
-      console.log('child send')
-      // 外部vue向iframe内部传数据
-      window.parent.postMessage(
-        {
-          cmd: 'returnToken',
-          params: data,
-        },
-        '*'
-      )
-    },
   },
-  created() {},
+  created() {
+    // 从URL参数中获取OAuth参数
+    this.parseOAuthParams()
+  },
   mounted() {},
 }
 </script>
