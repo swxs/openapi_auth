@@ -93,12 +93,26 @@
           注册
         </el-button>
       </el-form-item>
+
+      <el-divider>或</el-divider>
+
+      <el-form-item class="form-item">
+        <el-button
+          type="default"
+          class="btn github-btn"
+          id="GitHubLogin"
+          :loading="loadingGithub"
+          @click="githubLogin"
+        >
+          <i class="el-icon-link"></i> 使用 GitHub 登录
+        </el-button>
+      </el-form-item>
     </el-form>
   </div>
 </template>
 
 <script>
-import { register, login } from '../api/auth'
+import { register, login, getGithubLoginUrl } from '../api/auth'
 import {
   setToken,
   setRefreshToken,
@@ -112,6 +126,7 @@ export default {
     return {
       loadingSignIn: false,
       loadingSignUp: false,
+      loadingGithub: false,
       ttype: 2,
       logins: {
         identifier: '',
@@ -255,10 +270,64 @@ export default {
         this.$refs[key].classList.remove('is-show')
       }
     },
+    // GitHub登录
+    async githubLogin() {
+      this.loadingGithub = true
+      try {
+        const { code, data } = await getGithubLoginUrl()
+        if (code === 0 && data && data.auth_url) {
+          // 保存state到sessionStorage，用于回调时验证
+          if (data.state) {
+            sessionStorage.setItem('github_oauth_state', data.state)
+          }
+          // 重定向到GitHub授权页面
+          window.location.href = data.auth_url
+        } else {
+          this.$message.error('获取GitHub登录地址失败')
+        }
+      } catch (error) {
+        console.error('GitHub登录失败:', error)
+        this.$message.error('GitHub登录失败，请重试')
+      } finally {
+        this.loadingGithub = false
+      }
+    },
+    // 处理GitHub回调
+    handleGithubCallback() {
+      const urlParams = new URLSearchParams(window.location.search)
+      const token = urlParams.get('token')
+      const refreshToken = urlParams.get('refresh_token')
+
+      if (token && refreshToken) {
+        setToken(token)
+        setRefreshToken(refreshToken)
+        this.$message.success('GitHub登录成功')
+
+        // 如果是OAuth流程，重定向到授权确认页面
+        if (this.isOAuthFlow) {
+          const params = new URLSearchParams({
+            client_id: this.oauthParams.client_id,
+            redirect_uri: this.oauthParams.redirect_uri,
+            state: this.oauthParams.state,
+            scope: this.oauthParams.scope,
+          })
+          this.$router.replace(`/authorize?${params.toString()}`)
+        } else {
+          // 清除URL参数
+          window.history.replaceState({}, document.title, window.location.pathname)
+        }
+      }
+    },
   },
   created() {
     // 从URL参数中获取OAuth参数
     this.parseOAuthParams()
+    
+    // 检查是否是GitHub回调
+    const urlParams = new URLSearchParams(window.location.search)
+    if (urlParams.get('token') && urlParams.get('refresh_token')) {
+      this.handleGithubCallback()
+    }
   },
   mounted() {},
 }
@@ -318,6 +387,10 @@ export default {
   }
   #SignUp {
     margin-left: 40px;
+  }
+  .github-btn {
+    width: 300px;
+    margin-left: 20px;
   }
 }
 </style>
