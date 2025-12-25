@@ -1,113 +1,117 @@
 <template>
-  <div>
-    <div class="">
-      <!-- 密码登录 -->
-      <span
-        :class="{ ttype_changer: true, active: ttype === 2 }"
-        @click="change(2)"
-        >密码登录</span
-      >
-      <!-- 短信登录 -->
-      <!-- <span
-        :class="{ ttype_changer: true, active: ttype === 1 }"
-        @click="change(1)"
-        >短信登录</span
-      > -->
+  <div class="login-container">
+    <!-- 背景动画 -->
+    <div class="bg-animation">
+      <div class="bg-circle circle-1"></div>
+      <div class="bg-circle circle-2"></div>
+      <div class="bg-circle circle-3"></div>
     </div>
 
-    <el-form ref="form" class="form" :rules="rules" :model="logins">
-      <el-form-item class="form-item">
-        <el-input
-          type="text"
-          id="identifier"
-          class="input-text"
-          v-model.trim="logins.identifier"
-          placeholder="你的用户名"
-          @blur="verify('identifier')"
-          @focus="verify('identifier')"
-        >
-        </el-input>
-        <div ref="identifier" class="error-wrap">
-          <span class="error-text">请输入用户名</span>
-        </div>
-      </el-form-item>
-
-      <el-form-item class="form-item" id="t2" v-if="ttype === 2">
-        <el-input
-          type="password"
-          id="credential"
-          class="input-text"
-          v-model.trim="logins.credential"
-          placeholder="密码"
-          @blur="verify('credential')"
-          @focus="verify('credential')"
-        >
-        </el-input>
-        <div ref="credential" class="error-wrap">
-          <span class="error-text">你还没有输入密码</span>
-        </div>
-      </el-form-item>
-
-      <el-form-item class="form-item" id="t1" v-if="ttype === 1">
-        <el-input
-          id="credential"
-          class="input-text"
-          v-model.trim="logins.credential"
-          placeholder="验证码"
-          @blur="verify('credential')"
-          @focus="verify('credential')"
-        >
-          <el-button slot="suffix">获取验证码</el-button>
-        </el-input>
-        <div ref="credential" class="error-wrap">
-          <span class="error-text">你还没有输入验证码</span>
-        </div>
-      </el-form-item>
-
-      <div>
-        <el-checkbox v-model="is_remember" id="remember">记住我</el-checkbox>
-
-        <span id="forget">忘记密码？</span>
+    <!-- 登录卡片 -->
+    <div class="login-card">
+      <!-- 标题区域 -->
+      <div class="login-header">
+        <h1 class="login-title">
+          <span class="title-text">欢迎回来</span>
+          <span class="title-line"></span>
+        </h1>
+        <p class="login-subtitle">登录以继续访问</p>
       </div>
 
-      <el-form-item class="form-item">
-        <el-button
-          label="登录"
-          type="primary"
-          class="btn"
-          id="SignIn"
-          :loading="loadingSignIn"
-          :disabled="!logins.identifier || !logins.credential"
-          @click="SignIn"
-        >
-          登录
-        </el-button>
+      <!-- 表单区域 -->
+      <el-form ref="form" class="login-form" :rules="rules" :model="logins">
+        <el-form-item class="form-item">
+          <div class="input-wrapper">
+            <el-input
+              type="text"
+              id="identifier"
+              class="modern-input"
+              v-model.trim="logins.identifier"
+              placeholder="用户名"
+              prefix-icon="el-icon-user"
+              @blur="verify('identifier')"
+              @focus="verify('identifier')"
+            >
+            </el-input>
+            <div ref="identifier" class="error-wrap">
+              <span class="error-text">请输入用户名</span>
+            </div>
+          </div>
+        </el-form-item>
 
-        <el-button
-          label="注册"
-          class="btn"
-          id="SignUp"
-          :loading="loadingSignUp"
-          @click="SignUp"
-        >
-          注册
-        </el-button>
-      </el-form-item>
+        <el-form-item class="form-item" v-if="ttype === 2">
+          <div class="input-wrapper">
+            <el-input
+              type="password"
+              id="credential"
+              class="modern-input"
+              v-model.trim="logins.credential"
+              placeholder="密码"
+              prefix-icon="el-icon-lock"
+              show-password
+              @blur="verify('credential')"
+              @focus="verify('credential')"
+            >
+            </el-input>
+            <div ref="credential" class="error-wrap">
+              <span class="error-text">请输入密码</span>
+            </div>
+          </div>
+        </el-form-item>
 
-      <el-divider>或</el-divider>
+        <!-- 记住我和忘记密码 -->
+        <div class="form-options">
+          <el-checkbox v-model="is_remember" class="remember-checkbox">
+            记住我
+          </el-checkbox>
+          <span class="forget-password" @click="handleForgetPassword">忘记密码？</span>
+        </div>
 
-      <el-form-item class="form-item">
+        <!-- 登录和注册按钮 -->
+        <div class="form-actions">
+          <el-button
+            type="primary"
+            class="action-btn login-btn"
+            :loading="loadingSignIn"
+            :disabled="!logins.identifier || !logins.credential"
+            @click="SignIn"
+          >
+            <span v-if="!loadingSignIn">登录</span>
+            <span v-else>登录中...</span>
+          </el-button>
+
+          <el-button
+            class="action-btn register-btn"
+            :loading="loadingSignUp"
+            @click="SignUp"
+          >
+            <span v-if="!loadingSignUp">注册</span>
+            <span v-else>注册中...</span>
+          </el-button>
+        </div>
+
+        <!-- 分割线 -->
+        <div class="divider-wrapper">
+          <div class="divider-line"></div>
+          <span class="divider-text">或</span>
+          <div class="divider-line"></div>
+        </div>
+
+        <!-- GitHub登录按钮 -->
         <el-button
-          type="default"
-          class="btn github-btn"
-          id="GitHubLogin"
+          class="github-login-btn"
           :loading="loadingGithub"
           @click="githubLogin"
         >
-          <i class="el-icon-link"></i> 使用 GitHub 登录
+          <template slot="default">
+            <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+            </svg>
+            <span class="github-text">使用 GitHub 登录</span>
+          </template>
         </el-button>
-      </el-form-item>
-    </el-form>
+      </el-form>
+    </div>
   </div>
 </template>
 
@@ -270,6 +274,9 @@ export default {
         this.$refs[key].classList.remove('is-show')
       }
     },
+    handleForgetPassword() {
+      this.$message.info('忘记密码功能开发中...')
+    },
     // GitHub登录
     async githubLogin() {
       this.loadingGithub = true
@@ -334,63 +341,485 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style lang="less">
-.ttype_changer {
-  margin-left: 20px;
-  cursor: pointer;
-  &.active {
-    color: #409eff;
+<style lang="less" scoped>
+// 主容器
+.login-container {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  overflow: hidden;
+
+  // 背景动画
+  .bg-animation {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+
+    .bg-circle {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      animation: float 20s infinite ease-in-out;
+      backdrop-filter: blur(10px);
+
+      &.circle-1 {
+        width: 300px;
+        height: 300px;
+        top: -100px;
+        left: -100px;
+        animation-delay: 0s;
+      }
+
+      &.circle-2 {
+        width: 200px;
+        height: 200px;
+        bottom: -50px;
+        right: -50px;
+        animation-delay: 5s;
+      }
+
+      &.circle-3 {
+        width: 150px;
+        height: 150px;
+        top: 50%;
+        right: 10%;
+        animation-delay: 10s;
+      }
+    }
   }
-  &:hover {
-    color: #409eff;
+
+  @keyframes float {
+    0%, 100% {
+      transform: translate(0, 0) scale(1);
+      opacity: 0.5;
+    }
+    33% {
+      transform: translate(30px, -30px) scale(1.1);
+      opacity: 0.7;
+    }
+    66% {
+      transform: translate(-20px, 20px) scale(0.9);
+      opacity: 0.6;
+    }
   }
 }
 
-.form {
-  margin-top: 10px;
-  .form-item {
-    margin-bottom: 0px;
+// 登录卡片
+.login-card {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 420px;
+  padding: 40px;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  animation: slideUp 0.5s ease-out;
+
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
-  .el-input {
-    width: 300px;
+
+  // 响应式设计
+  @media (max-width: 768px) {
+    padding: 30px 20px;
+    max-width: 100%;
+    border-radius: 15px;
   }
-  .error-wrap {
-    color: #f98a8a;
-    line-height: 16px;
-    margin-left: 20px;
-  }
-  .btn {
-    margin-top: 20px;
-  }
-  #t1 {
-    .el-input--suffix {
-      padding-right: 0px;
-      .el-input__inner {
-        padding-right: 90px;
+}
+
+// 标题区域
+.login-header {
+  text-align: center;
+  margin-bottom: 40px;
+
+  .login-title {
+    margin: 0 0 10px 0;
+    font-size: 32px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+
+    .title-text {
+      position: relative;
+    }
+
+    .title-line {
+      width: 60px;
+      height: 3px;
+      background: linear-gradient(90deg, #667eea, #764ba2);
+      border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+      font-size: 28px;
+      flex-direction: column;
+      gap: 10px;
+
+      .title-line {
+        width: 40px;
       }
-      .el-input__suffix {
-        right: 0px;
-        .el-button {
-          padding: 12px 2px;
+    }
+  }
+
+  .login-subtitle {
+    margin: 0;
+    color: #666;
+    font-size: 14px;
+    font-weight: 400;
+  }
+}
+
+// 表单
+.login-form {
+  .form-item {
+    margin-bottom: 24px;
+
+    .input-wrapper {
+      position: relative;
+    }
+
+    .modern-input {
+      width: 100%;
+
+      /deep/ .el-input__inner {
+        height: 48px;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding-left: 45px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        background: #f8f9fa;
+
+        &:focus {
+          border-color: #667eea;
+          background: #fff;
+          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        &::placeholder {
+          color: #999;
+        }
+      }
+
+      /deep/ .el-input__prefix {
+        left: 15px;
+        color: #999;
+        font-size: 18px;
+      }
+    }
+
+    .error-wrap {
+      margin-top: 8px;
+      height: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      display: flex;
+      align-items: center;
+
+      &.is-show {
+        opacity: 1;
+      }
+
+      .error-text {
+        color: #ff4757;
+        font-size: 12px;
+        margin-left: 0;
+      }
+    }
+  }
+
+  // 表单选项
+  .form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    font-size: 14px;
+    height: 20px;
+    line-height: 20px;
+
+    .remember-checkbox {
+      display: flex;
+      align-items: center;
+      height: 20px;
+      margin: 0;
+
+      /deep/ .el-checkbox {
+        display: flex;
+        align-items: center;
+        height: 20px;
+        line-height: 20px;
+      }
+
+      /deep/ .el-checkbox__input {
+        display: flex;
+        align-items: center;
+        height: 20px;
+        line-height: 20px;
+
+        .el-checkbox__inner {
+          width: 16px;
+          height: 16px;
+          border-radius: 4px;
+        }
+      }
+
+      /deep/ .el-checkbox__label {
+        color: #666;
+        font-size: 14px;
+        line-height: 20px;
+        padding-left: 8px;
+        height: 20px;
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .forget-password {
+      color: #667eea;
+      cursor: pointer;
+      transition: color 0.3s ease;
+      font-size: 14px;
+      height: 20px;
+      line-height: 20px;
+      display: flex;
+      align-items: center;
+
+      &:hover {
+        color: #764ba2;
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // 操作按钮
+  .form-actions {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 30px;
+    align-items: stretch;
+
+    .action-btn {
+      flex: 1;
+      height: 48px;
+      min-height: 48px;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0;
+      line-height: 1;
+
+      /deep/ .el-button__inner {
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        line-height: 1 !important;
+        height: 100%;
+      }
+
+      &.login-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: #fff;
+
+        &:hover:not(:disabled) {
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        &:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      }
+
+      &.register-btn {
+        margin-left: 0px;
+        background: #f8f9fa;
+        color: #667eea;
+        border: 2px solid #e0e0e0;
+
+        &:hover {
+          background: #fff;
+          border-color: #667eea;
+          transform: translateY(-2px);
         }
       }
     }
   }
-  #remember {
-    margin-left: 20px;
+
+  // 分割线
+  .divider-wrapper {
+    display: flex;
+    align-items: center;
+    margin: 30px 0;
+    gap: 15px;
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+    }
+
+    .divider-text {
+      color: #999;
+      font-size: 12px;
+      font-weight: 500;
+    }
   }
-  #forget {
-    margin-left: 120px;
+
+  // GitHub登录按钮
+  .github-login-btn {
+    width: 100%;
+    height: 48px;
+    min-height: 48px;
+    border-radius: 12px;
+    background: #24292e;
+    color: #fff;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+
+    /deep/ .el-button__inner {
+      display: inline-flex !important;
+      align-items: center !important;
+      justify-content: center !important;
+      gap: 10px !important;
+      width: 100%;
+      height: 100%;
+      padding: 0 20px;
+      line-height: 48px !important;
+      white-space: nowrap;
+      flex-wrap: nowrap;
+      vertical-align: middle;
+    }
+
+    &:hover:not(:disabled) {
+      background: #2f363d;
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(36, 41, 46, 0.3);
+    }
+
+    .github-icon {
+      width: 20px;
+      height: 20px;
+      min-width: 20px;
+      min-height: 20px;
+      vertical-align: text-bottom;
+      margin-right: 10px;
+      fill: currentColor;
+      flex-shrink: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .github-text {
+      vertical-align: text-bottom;
+      vertical-align: text-bottom;
+      display: inline-flex;
+      align-items: center;
+      line-height: 1;
+      white-space: nowrap;
+      flex-shrink: 0;
+      height: 100%;
+    }
+
+    @media (max-width: 768px) {
+      height: 44px;
+      min-height: 44px;
+      font-size: 14px;
+
+      /deep/ .el-button__inner {
+        padding: 0 15px;
+        line-height: 44px !important;
+      }
+    }
   }
-  #SignIn {
-    margin-left: 60px;
+}
+
+// 移动端优化
+@media (max-width: 768px) {
+  .login-container {
+    padding: 15px;
+    align-items: flex-start;
+    padding-top: 60px;
   }
-  #SignUp {
-    margin-left: 40px;
+
+  .login-card {
+    padding: 30px 20px;
   }
-  .github-btn {
-    width: 300px;
-    margin-left: 20px;
+
+  .login-header {
+    margin-bottom: 30px;
+  }
+
+  .form-actions {
+    flex-direction: column;
+    gap: 12px;
+
+    .action-btn {
+      width: 100%;
+      height: 48px;
+      min-height: 48px;
+      line-height: 48px;
+    }
+  }
+
+  .github-login-btn {
+    height: 48px;
+    min-height: 48px;
+    line-height: 48px;
+  }
+}
+
+// 小屏幕优化
+@media (max-width: 480px) {
+  .login-container {
+    padding: 10px;
+    padding-top: 40px;
+  }
+
+  .login-card {
+    padding: 25px 15px;
+  }
+
+  .login-header .login-title {
+    font-size: 24px;
   }
 }
 </style>
