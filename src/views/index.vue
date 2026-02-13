@@ -19,57 +19,59 @@
       </div>
 
       <!-- 表单区域 -->
-      <el-form ref="form" class="login-form" :rules="rules" :model="logins">
-        <el-form-item class="form-item">
+      <a-form ref="formRef" class="login-form" :model="logins">
+        <a-form-item class="form-item">
           <div class="input-wrapper">
-            <el-input
-              type="text"
+            <a-input
               id="identifier"
               class="modern-input"
-              v-model.trim="logins.identifier"
+              v-model:value="logins.identifier"
               placeholder="用户名"
-              prefix-icon="el-icon-user"
+              allow-clear
               @blur="verify('identifier')"
               @focus="verify('identifier')"
             >
-            </el-input>
+              <template #prefix>
+                <UserOutlined class="input-prefix-icon" />
+              </template>
+            </a-input>
             <div ref="identifier" class="error-wrap">
               <span class="error-text">请输入用户名</span>
             </div>
           </div>
-        </el-form-item>
+        </a-form-item>
 
-        <el-form-item class="form-item" v-if="ttype === 2">
+        <a-form-item class="form-item" v-if="ttype === 2">
           <div class="input-wrapper">
-            <el-input
-              type="password"
+            <a-input-password
               id="credential"
               class="modern-input"
-              v-model.trim="logins.credential"
+              v-model:value="logins.credential"
               placeholder="密码"
-              prefix-icon="el-icon-lock"
-              show-password
               @blur="verify('credential')"
               @focus="verify('credential')"
             >
-            </el-input>
+              <template #prefix>
+                <LockOutlined class="input-prefix-icon" />
+              </template>
+            </a-input-password>
             <div ref="credential" class="error-wrap">
               <span class="error-text">请输入密码</span>
             </div>
           </div>
-        </el-form-item>
+        </a-form-item>
 
         <!-- 记住我和忘记密码 -->
         <div class="form-options">
-          <el-checkbox v-model="is_remember" class="remember-checkbox">
+          <a-checkbox v-model:checked="is_remember" class="remember-checkbox">
             记住我
-          </el-checkbox>
+          </a-checkbox>
           <span class="forget-password" @click="handleForgetPassword">忘记密码？</span>
         </div>
 
         <!-- 登录和注册按钮 -->
         <div class="form-actions">
-          <el-button
+          <a-button
             type="primary"
             class="action-btn login-btn"
             :loading="loadingSignIn"
@@ -78,16 +80,16 @@
           >
             <span v-if="!loadingSignIn">登录</span>
             <span v-else>登录中...</span>
-          </el-button>
+          </a-button>
 
-          <el-button
+          <a-button
             class="action-btn register-btn"
             :loading="loadingSignUp"
             @click="SignUp"
           >
             <span v-if="!loadingSignUp">注册</span>
             <span v-else>注册中...</span>
-          </el-button>
+          </a-button>
         </div>
 
         <!-- 分割线 -->
@@ -98,24 +100,23 @@
         </div>
 
         <!-- GitHub登录按钮 -->
-        <el-button
+        <a-button
           class="github-login-btn"
           :loading="loadingGithub"
           @click="githubLogin"
         >
-          <template slot="default">
-            <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-            </svg>
-            <span class="github-text">使用 GitHub 登录</span>
-          </template>
-        </el-button>
-      </el-form>
+          <svg class="github-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          <span class="github-text">使用 GitHub 登录</span>
+        </a-button>
+      </a-form>
     </div>
   </div>
 </template>
 
 <script>
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
 import { register, login, getGithubLoginUrl } from '../api/auth'
 import {
   setToken,
@@ -125,7 +126,7 @@ import {
 
 export default {
   name: 'index',
-  components: {},
+  components: { UserOutlined, LockOutlined },
   data() {
     return {
       loadingSignIn: false,
@@ -505,31 +506,51 @@ export default {
     .modern-input {
       width: 100%;
 
-      /deep/ .el-input__inner {
+      :deep(.ant-input),
+      :deep(.ant-input-password) {
         height: 48px;
-        border: 2px solid #e0e0e0;
+        border: 1px solid #e5e9ec;
         border-radius: 12px;
         padding-left: 45px;
         font-size: 14px;
-        transition: all 0.3s ease;
-        background: #f8f9fa;
+        transition: border-color 0.2s ease, background 0.2s ease;
+        background: #f2f7fb;
 
-        &:focus {
-          border-color: #667eea;
-          background: #fff;
-          box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        &:hover {
+          border-color: #d9e0e6;
+          background: #eef4f9;
+        }
+
+        &:focus,
+        &.ant-input-focused {
+          border-color: #c5d4e0;
+          background: #f2f7fb;
+          box-shadow: none;
         }
 
         &::placeholder {
-          color: #999;
+          color: #8c8c8c;
         }
       }
 
-      /deep/ .el-input__prefix {
-        left: 15px;
-        color: #999;
+      :deep(.ant-input-password .ant-input) {
+        padding-left: 45px;
+      }
+
+      :deep(.ant-input-prefix) {
+        margin-right: 8px;
+        color: #8c8c8c;
         font-size: 18px;
       }
+
+      :deep(.ant-input-password .ant-input-suffix) {
+        color: #8c8c8c;
+      }
+    }
+
+    .input-prefix-icon {
+      color: #8c8c8c;
+      font-size: 18px;
     }
 
     .error-wrap {
@@ -568,27 +589,20 @@ export default {
       height: 20px;
       margin: 0;
 
-      /deep/ .el-checkbox {
+      :deep(.ant-checkbox-wrapper) {
         display: flex;
         align-items: center;
         height: 20px;
         line-height: 20px;
       }
 
-      /deep/ .el-checkbox__input {
-        display: flex;
-        align-items: center;
-        height: 20px;
-        line-height: 20px;
-
-        .el-checkbox__inner {
-          width: 16px;
-          height: 16px;
-          border-radius: 4px;
-        }
+      :deep(.ant-checkbox-inner) {
+        width: 16px;
+        height: 16px;
+        border-radius: 4px;
       }
 
-      /deep/ .el-checkbox__label {
+      :deep(.ant-checkbox + span) {
         color: #666;
         font-size: 14px;
         line-height: 20px;
@@ -638,7 +652,7 @@ export default {
       padding: 0;
       line-height: 1;
 
-      /deep/ .el-button__inner {
+      :deep(.ant-btn) {
         display: inline-flex !important;
         align-items: center !important;
         justify-content: center !important;
@@ -714,7 +728,7 @@ export default {
     justify-content: center;
     padding: 0;
 
-    /deep/ .el-button__inner {
+    :deep(.ant-btn) {
       display: inline-flex !important;
       align-items: center !important;
       justify-content: center !important;
@@ -764,7 +778,7 @@ export default {
       min-height: 44px;
       font-size: 14px;
 
-      /deep/ .el-button__inner {
+      :deep(.ant-btn) {
         padding: 0 15px;
         line-height: 44px !important;
       }

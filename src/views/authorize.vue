@@ -7,16 +7,18 @@
         <p><strong>请求权限：</strong>{{ scopeDisplay }}</p>
       </div>
       <div class="authorize-actions">
-        <el-button type="primary" @click="confirmAuthorize" :loading="loading">
+        <a-button type="primary" @click="confirmAuthorize" :loading="loading">
           授权
-        </el-button>
-        <el-button @click="cancelAuthorize">取消</el-button>
+        </a-button>
+        <a-button @click="cancelAuthorize">取消</a-button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import { getToken } from '../utils/auth'
+
 export default {
   name: 'Authorize',
   data() {
@@ -65,8 +67,6 @@ export default {
     async confirmAuthorize() {
       this.loading = true
       try {
-        // 获取token
-        const { getToken } = require('../utils/auth')
         const token = getToken()
         
         if (!token) {

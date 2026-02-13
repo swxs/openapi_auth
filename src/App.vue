@@ -41,12 +41,12 @@ body {
   width: 100%;
 }
 
-// Element UI 组件样式覆盖
-.el-button {
+// Ant Design Vue 组件样式覆盖（可选）
+.ant-btn {
   transition: all 0.3s ease;
 }
 
-.el-input__inner {
+.ant-input {
   transition: all 0.3s ease;
 }
 
