@@ -1,27 +1,14 @@
 <template>
   <div class="login-container">
-    <!-- 背景动画 -->
-    <div class="bg-animation">
-      <div class="bg-circle circle-1"></div>
-      <div class="bg-circle circle-2"></div>
-      <div class="bg-circle circle-3"></div>
-    </div>
-
-    <!-- 登录卡片 -->
     <div class="login-card">
-      <!-- 标题区域 -->
-      <div class="login-header">
-        <h1 class="login-title">
-          <span class="title-text">欢迎回来</span>
-          <span class="title-line"></span>
-        </h1>
+      <header class="login-header">
+        <h1 class="login-title">欢迎回来</h1>
         <p class="login-subtitle">登录以继续访问</p>
-      </div>
+      </header>
 
-      <!-- 表单区域 -->
       <a-form ref="formRef" class="login-form" :model="logins">
-        <a-form-item class="form-item">
-          <div class="input-wrapper">
+        <div class="input-group">
+          <a-form-item class="form-item form-item-inline">
             <a-input
               id="identifier"
               class="modern-input"
@@ -35,14 +22,8 @@
                 <UserOutlined class="input-prefix-icon" />
               </template>
             </a-input>
-            <div ref="identifier" class="error-wrap">
-              <span class="error-text">请输入用户名</span>
-            </div>
-          </div>
-        </a-form-item>
-
-        <a-form-item class="form-item" v-if="ttype === 2">
-          <div class="input-wrapper">
+          </a-form-item>
+          <a-form-item class="form-item form-item-inline" v-if="ttype === 2">
             <a-input-password
               id="credential"
               class="modern-input"
@@ -55,21 +36,22 @@
                 <LockOutlined class="input-prefix-icon" />
               </template>
             </a-input-password>
-            <div ref="credential" class="error-wrap">
-              <span class="error-text">请输入密码</span>
-            </div>
+          </a-form-item>
+        </div>
+        <div class="error-row">
+          <div ref="identifier" class="error-wrap">
+            <span class="error-text">请输入用户名</span>
           </div>
-        </a-form-item>
+          <div ref="credential" class="error-wrap">
+            <span class="error-text">请输入密码</span>
+          </div>
+        </div>
 
-        <!-- 记住我和忘记密码 -->
         <div class="form-options">
-          <a-checkbox v-model:checked="is_remember" class="remember-checkbox">
-            记住我
-          </a-checkbox>
+          <a-checkbox v-model:checked="is_remember" class="remember-checkbox">记住我</a-checkbox>
           <span class="forget-password" @click="handleForgetPassword">忘记密码？</span>
         </div>
 
-        <!-- 登录和注册按钮 -->
         <div class="form-actions">
           <a-button
             type="primary"
@@ -341,310 +323,211 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
 <style lang="less" scoped>
-// 主容器
+@import '../assets/style/variables.less';
+
 .login-container {
-  position: relative;
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  overflow: hidden;
-
-  // 背景动画
-  .bg-animation {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: 0;
-
-    .bg-circle {
-      position: absolute;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      animation: float 20s infinite ease-in-out;
-      backdrop-filter: blur(10px);
-
-      &.circle-1 {
-        width: 300px;
-        height: 300px;
-        top: -100px;
-        left: -100px;
-        animation-delay: 0s;
-      }
-
-      &.circle-2 {
-        width: 200px;
-        height: 200px;
-        bottom: -50px;
-        right: -50px;
-        animation-delay: 5s;
-      }
-
-      &.circle-3 {
-        width: 150px;
-        height: 150px;
-        top: 50%;
-        right: 10%;
-        animation-delay: 10s;
-      }
-    }
-  }
-
-  @keyframes float {
-    0%, 100% {
-      transform: translate(0, 0) scale(1);
-      opacity: 0.5;
-    }
-    33% {
-      transform: translate(30px, -30px) scale(1.1);
-      opacity: 0.7;
-    }
-    66% {
-      transform: translate(-20px, 20px) scale(0.9);
-      opacity: 0.6;
-    }
-  }
+  padding: @space-lg;
+  background-color: @color-bg-page;
 }
 
-// 登录卡片
 .login-card {
-  position: relative;
-  z-index: 1;
   width: 100%;
-  max-width: 420px;
-  padding: 40px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  animation: slideUp 0.5s ease-out;
+  max-width: 380px;
+  padding: @space-xl;
+  background: @color-bg;
+  border-radius: @radius-xl;
+  box-shadow: @shadow-lg;
+  border: 1px solid @color-border-light;
+  animation: cardIn 0.4s @ease-out;
+}
 
-  @keyframes slideUp {
-    from {
-      opacity: 0;
-      transform: translateY(30px);
-    }
-    to {
-      opacity: 1;
-      transform: translateY(0);
-    }
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
   }
-
-  // 响应式设计
-  @media (max-width: 768px) {
-    padding: 30px 20px;
-    max-width: 100%;
-    border-radius: 15px;
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
-// 标题区域
 .login-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: @space-xl;
 
   .login-title {
-    margin: 0 0 10px 0;
-    font-size: 32px;
-    font-weight: 700;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 15px;
-
-    .title-text {
-      position: relative;
-    }
-
-    .title-line {
-      width: 60px;
-      height: 3px;
-      background: linear-gradient(90deg, #667eea, #764ba2);
-      border-radius: 2px;
-    }
-
-    @media (max-width: 768px) {
-      font-size: 28px;
-      flex-direction: column;
-      gap: 10px;
-
-      .title-line {
-        width: 40px;
-      }
-    }
+    margin: 0 0 @space-xs 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: @color-text;
+    letter-spacing: -0.02em;
   }
 
   .login-subtitle {
     margin: 0;
-    color: #666;
-    font-size: 14px;
-    font-weight: 400;
+    font-size: 13px;
+    color: @color-text-secondary;
   }
 }
 
-// 表单
 .login-form {
-  .form-item {
-    margin-bottom: 24px;
+  // 输入组：用户名+密码 合为一个框，不散
+  .input-group {
+    border-radius: @radius-md;
+    overflow: hidden;
+    background: @color-bg;
+    transition: border-color @duration-normal @ease-out, box-shadow @duration-fast @ease-out;
 
-    .input-wrapper {
-      position: relative;
+    &:focus-within {
+      border-color: @color-primary;
+      box-shadow: 0 0 0 2px fade(@color-primary, 12%);
     }
 
-    .modern-input {
-      width: 100%;
-
-      :deep(.ant-input),
-      :deep(.ant-input-password) {
-        height: 48px;
-        border: 1px solid #e5e9ec;
-        border-radius: 12px;
-        padding-left: 45px;
-        font-size: 14px;
-        transition: border-color 0.2s ease, background 0.2s ease;
-        background: #f2f7fb;
-
-        &:hover {
-          border-color: #d9e0e6;
-          background: #eef4f9;
-        }
-
-        &:focus,
-        &.ant-input-focused {
-          border-color: #c5d4e0;
-          background: #f2f7fb;
-          box-shadow: none;
-        }
-
-        &::placeholder {
-          color: #8c8c8c;
-        }
-      }
-
-      :deep(.ant-input-password .ant-input) {
-        padding-left: 45px;
-      }
-
-      :deep(.ant-input-prefix) {
-        margin-right: 8px;
-        color: #8c8c8c;
-        font-size: 18px;
-      }
-
-      :deep(.ant-input-password .ant-input-suffix) {
-        color: #8c8c8c;
-      }
-    }
-
-    .input-prefix-icon {
-      color: #8c8c8c;
-      font-size: 18px;
-    }
-
-    .error-wrap {
-      margin-top: 8px;
-      height: 20px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      display: flex;
-      align-items: center;
-
-      &.is-show {
-        opacity: 1;
-      }
-
-      .error-text {
-        color: #ff4757;
-        font-size: 12px;
-        margin-left: 0;
-      }
+    :deep(.ant-form-item),
+    :deep(.ant-form-item-control),
+    :deep(.ant-form-item-control-input) {
+      border: none !important;
+      background: transparent !important;
     }
   }
 
-  // 表单选项
+  .form-item-inline {
+    margin-bottom: 0 !important;
+
+    :deep(.ant-form-item-control-input) {
+      min-height: auto;
+    }
+  }
+
+  .input-group .form-item-inline + .form-item-inline {
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: none !important;
+  }
+
+  .input-group .modern-input {
+    :deep(.ant-input-affix-wrapper),
+    :deep(.ant-input-password),
+    :deep(.ant-input) {
+      height: 40px;
+      min-height: 40px;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      background: transparent !important;
+      padding: 0 !important;
+
+      &:hover,
+      &:focus,
+      &.ant-input-focused {
+        border: none !important;
+        box-shadow: none !important;
+        background: transparent !important;
+      }
+    }
+
+    :deep(.ant-input) {
+      padding: 8px 10px 8px 20px !important;
+      font-size: 15px;
+    }
+
+    :deep(.ant-input-password .ant-input) {
+      padding: 8px 10px 8px 20px !important;
+    }
+
+    :deep(.ant-input-prefix) {
+      margin-right: 8px;
+      padding-left: 0;
+      color: @color-text-muted;
+      font-size: 15px;
+    }
+
+    :deep(.ant-input-suffix) {
+      color: @color-text-muted;
+      padding-right: 0;
+    }
+  }
+
+  .error-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 @space-lg;
+    margin-bottom: @space-md;
+    min-height: 18px;
+  }
+
+  .error-wrap {
+    flex: 1;
+    min-width: 0;
+    margin-top: 0;
+    min-height: 18px;
+    opacity: 0;
+    transition: opacity @duration-normal @ease-out;
+
+    &.is-show {
+      opacity: 1;
+    }
+
+    .error-text {
+      color: @color-error;
+      font-size: 12px;
+    }
+  }
+
   .form-options {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
-    font-size: 14px;
-    height: 20px;
-    line-height: 20px;
+    margin-bottom: @space-md;
+    font-size: 13px;
+    min-height: 22px;
 
     .remember-checkbox {
-      display: flex;
-      align-items: center;
-      height: 20px;
       margin: 0;
-
-      :deep(.ant-checkbox-wrapper) {
-        display: flex;
-        align-items: center;
-        height: 20px;
-        line-height: 20px;
-      }
-
       :deep(.ant-checkbox-inner) {
-        width: 16px;
-        height: 16px;
-        border-radius: 4px;
+        border-radius: @radius-sm;
       }
-
       :deep(.ant-checkbox + span) {
-        color: #666;
-        font-size: 14px;
-        line-height: 20px;
-        padding-left: 8px;
-        height: 20px;
-        display: flex;
-        align-items: center;
+        color: @color-text-secondary;
+        padding-left: @space-sm;
       }
     }
 
     .forget-password {
-      color: #667eea;
+      color: @color-primary;
       cursor: pointer;
-      transition: color 0.3s ease;
-      font-size: 14px;
-      height: 20px;
-      line-height: 20px;
-      display: flex;
-      align-items: center;
+      transition: color @duration-normal @ease-out;
 
       &:hover {
-        color: #764ba2;
+        color: @color-primary-hover;
         text-decoration: underline;
       }
     }
   }
 
-  // 操作按钮
   .form-actions {
     display: flex;
-    gap: 12px;
-    margin-bottom: 30px;
+    gap: @space-sm;
+    margin-bottom: @space-md;
     align-items: stretch;
 
     .action-btn {
       flex: 1;
-      height: 48px;
-      min-height: 48px;
-      border-radius: 12px;
-      font-size: 16px;
-      font-weight: 600;
-      transition: all 0.3s ease;
+      height: 42px;
+      min-height: 42px;
+      border-radius: @radius-md;
+      font-size: 14px;
+      font-weight: 500;
+      transition: border-color @duration-normal @ease-out,
+        background-color @duration-normal @ease-out,
+        color @duration-normal @ease-out,
+        box-shadow @duration-fast @ease-out;
       border: none;
       display: flex;
       align-items: center;
@@ -661,68 +544,64 @@ export default {
       }
 
       &.login-btn {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        background: @color-primary;
         color: #fff;
 
         &:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+          background: @color-primary-hover;
+          box-shadow: 0 4px 12px fade(@color-primary, 35%);
         }
 
         &:disabled {
-          opacity: 0.6;
+          opacity: 0.5;
           cursor: not-allowed;
         }
       }
 
       &.register-btn {
-        margin-left: 0px;
-        background: #f8f9fa;
-        color: #667eea;
-        border: 2px solid #e0e0e0;
+        background: @color-bg;
+        color: @color-text-secondary;
+        border: 1px solid @color-border;
 
         &:hover {
-          background: #fff;
-          border-color: #667eea;
-          transform: translateY(-2px);
+          border-color: @color-primary;
+          color: @color-primary;
         }
       }
     }
   }
 
-  // 分割线
   .divider-wrapper {
     display: flex;
     align-items: center;
-    margin: 30px 0;
-    gap: 15px;
+    margin: @space-md 0;
+    gap: @space-sm;
 
     .divider-line {
       flex: 1;
       height: 1px;
-      background: linear-gradient(90deg, transparent, #e0e0e0, transparent);
+      background: @color-border;
     }
 
     .divider-text {
-      color: #999;
+      color: @color-text-muted;
       font-size: 12px;
       font-weight: 500;
     }
   }
 
-  // GitHub登录按钮
   .github-login-btn {
     width: 100%;
-    height: 48px;
-    min-height: 48px;
-    border-radius: 12px;
+    height: 42px;
+    min-height: 42px;
+    border-radius: @radius-md;
     background: #24292e;
     color: #fff;
     border: none;
-    font-size: 15px;
-    font-weight: 600;
-    transition: all 0.3s ease;
-    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color @duration-normal @ease-out,
+      box-shadow @duration-fast @ease-out;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -735,105 +614,69 @@ export default {
       gap: 10px !important;
       width: 100%;
       height: 100%;
-      padding: 0 20px;
-      line-height: 48px !important;
-      white-space: nowrap;
-      flex-wrap: nowrap;
-      vertical-align: middle;
+      padding: 0 @space-lg;
     }
 
     &:hover:not(:disabled) {
       background: #2f363d;
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(36, 41, 46, 0.3);
+      box-shadow: @shadow-md;
     }
 
     .github-icon {
-      width: 20px;
-      height: 20px;
-      min-width: 20px;
-      min-height: 20px;
-      vertical-align: text-bottom;
-      margin-right: 10px;
+      width: 18px;
+      height: 18px;
+      min-width: 18px;
+      min-height: 18px;
+      margin-right: 8px;
       fill: currentColor;
       flex-shrink: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
     }
 
     .github-text {
-      vertical-align: text-bottom;
-      vertical-align: text-bottom;
       display: inline-flex;
       align-items: center;
       line-height: 1;
       white-space: nowrap;
-      flex-shrink: 0;
-      height: 100%;
-    }
-
-    @media (max-width: 768px) {
-      height: 44px;
-      min-height: 44px;
-      font-size: 14px;
-
-      :deep(.ant-btn) {
-        padding: 0 15px;
-        line-height: 44px !important;
-      }
     }
   }
 }
 
-// 移动端优化
 @media (max-width: 768px) {
   .login-container {
-    padding: 15px;
+    padding: @space-md;
     align-items: flex-start;
-    padding-top: 60px;
+    padding-top: 48px;
   }
 
   .login-card {
-    padding: 30px 20px;
+    padding: @space-xl @space-lg;
   }
 
   .login-header {
-    margin-bottom: 30px;
+    margin-bottom: @space-xl;
   }
 
   .form-actions {
     flex-direction: column;
-    gap: 12px;
 
     .action-btn {
       width: 100%;
-      height: 48px;
-      min-height: 48px;
-      line-height: 48px;
     }
-  }
-
-  .github-login-btn {
-    height: 48px;
-    min-height: 48px;
-    line-height: 48px;
   }
 }
 
-// 小屏幕优化
 @media (max-width: 480px) {
   .login-container {
-    padding: 10px;
-    padding-top: 40px;
+    padding: @space-sm;
+    padding-top: 32px;
   }
 
   .login-card {
-    padding: 25px 15px;
+    padding: @space-lg @space-md;
   }
 
   .login-header .login-title {
-    font-size: 24px;
+    font-size: 22px;
   }
 }
 </style>

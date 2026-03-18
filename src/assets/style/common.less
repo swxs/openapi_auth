@@ -1,24 +1,26 @@
-.iconfont {
-  font-size: 30px;
-  text-decoration: none;
-  color: #ccc;
-  cursor: pointer;
-  &:hover {
-    color: #00e0f0;
-  }
+@import './variables.less';
 
+.iconfont {
+  font-size: 24px;
+  text-decoration: none;
+  color: @color-text-muted;
+  cursor: pointer;
+  transition: color @duration-normal @ease-out;
+  &:hover {
+    color: @color-primary;
+  }
   &.is-use {
-    color: #00e0f0;
+    color: @color-primary;
   }
 }
 
 .error-wrap {
-  padding: 5px 0;
+  padding: @space-xs 0;
   opacity: 0;
+  transition: opacity @duration-normal @ease-out;
   &.org_code {
     padding: 0;
   }
-
   &.is-show {
     opacity: 1;
   }

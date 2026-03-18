@@ -1,38 +1,53 @@
 <template>
-  <div id="app">
-    <!--所有的页面都将加载到此处-->
-    <router-view></router-view>
-  </div>
+  <a-config-provider :theme="antdTheme">
+    <div id="app">
+      <router-view />
+    </div>
+  </a-config-provider>
 </template>
 
 <script>
 export default {
   name: 'App',
-  components: {},
+  data() {
+    return {
+      antdTheme: {
+        token: {
+          colorPrimary: '#2563eb',
+          borderRadius: 10,
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif",
+        },
+      },
+    }
+  },
   created() {
-    document.title = "登录中心"
+    document.title = '登录中心'
   },
 }
 </script>
 
 <style lang="less">
+@import './assets/style/variables.less';
 @import './assets/fonts/iconfont.less';
 @import './assets/style/base.less';
 @import './assets/style/common.less';
 
-// 全局样式优化
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+html {
+  font-family: @font-family-sans;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-family: @font-family-sans;
+  color: @color-text;
+  background-color: @color-bg-page;
   overflow-x: hidden;
 }
 
@@ -41,32 +56,45 @@ body {
   width: 100%;
 }
 
-// Ant Design Vue 组件样式覆盖（可选）
+// Ant Design 覆盖 - 简洁风格
 .ant-btn {
-  transition: all 0.3s ease;
+  transition: border-color @duration-normal @ease-out,
+    background-color @duration-normal @ease-out,
+    color @duration-normal @ease-out,
+    box-shadow @duration-fast @ease-out;
+  border-radius: @radius-md;
 }
 
-.ant-input {
-  transition: all 0.3s ease;
+.ant-input,
+.ant-input-password input {
+  transition: border-color @duration-normal @ease-out,
+    box-shadow @duration-fast @ease-out;
+  border-radius: @radius-md;
 }
 
-// 滚动条样式
+.ant-input:focus,
+.ant-input-focused,
+.ant-input-password.ant-input-focused input {
+  box-shadow: 0 0 0 2px fade(@color-primary, 12%);
+}
+
+// 滚动条 - 简洁
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.1);
-  border-radius: 4px;
+  background: @color-border-light;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(102, 126, 234, 0.5);
-  border-radius: 4px;
+  background: @color-text-muted;
+  border-radius: 3px;
 
   &:hover {
-    background: rgba(102, 126, 234, 0.7);
+    background: @color-text-secondary;
   }
 }
 </style>

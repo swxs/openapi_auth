@@ -1,16 +1,23 @@
 <template>
   <div class="authorize-container">
-    <div class="authorize-box">
-      <h2>授权确认</h2>
+    <div class="authorize-card">
+      <h1 class="authorize-title">授权确认</h1>
+      <p class="authorize-desc">以下应用请求访问您的账号</p>
       <div class="app-info">
-        <p><strong>应用名称：</strong>{{ clientInfo.client_name || '未知应用' }}</p>
-        <p><strong>请求权限：</strong>{{ scopeDisplay }}</p>
+        <div class="info-row">
+          <span class="info-label">应用名称</span>
+          <span class="info-value">{{ clientInfo.client_name || '未知应用' }}</span>
+        </div>
+        <div class="info-row">
+          <span class="info-label">请求权限</span>
+          <span class="info-value">{{ scopeDisplay }}</span>
+        </div>
       </div>
       <div class="authorize-actions">
-        <a-button type="primary" @click="confirmAuthorize" :loading="loading">
+        <a-button type="primary" size="large" class="btn-confirm" @click="confirmAuthorize" :loading="loading">
           授权
         </a-button>
-        <a-button @click="cancelAuthorize">取消</a-button>
+        <a-button size="large" class="btn-cancel" @click="cancelAuthorize">取消</a-button>
       </div>
     </div>
   </div>
@@ -121,44 +128,129 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../assets/style/variables.less';
+
 .authorize-container {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   min-height: 100vh;
-  background-color: #f5f5f5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: @space-lg;
+  background-color: @color-bg-page;
 }
 
-.authorize-box {
-  background: white;
-  padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
-  min-width: 400px;
-  max-width: 500px;
+.authorize-card {
+  width: 100%;
+  max-width: 420px;
+  padding: @space-2xl;
+  background: @color-bg;
+  border-radius: @radius-xl;
+  box-shadow: @shadow-lg;
+  border: 1px solid @color-border-light;
+  animation: cardIn 0.4s @ease-out;
+}
 
-  h2 {
-    margin-bottom: 30px;
-    text-align: center;
-    color: #333;
+@keyframes cardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
   }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-  .app-info {
-    margin-bottom: 30px;
-    padding: 20px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
+.authorize-title {
+  margin: 0 0 @space-xs 0;
+  font-size: 22px;
+  font-weight: 600;
+  color: @color-text;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
 
-    p {
-      margin: 10px 0;
-      color: #666;
+.authorize-desc {
+  margin: 0 0 @space-xl 0;
+  font-size: 14px;
+  color: @color-text-secondary;
+  text-align: center;
+}
+
+.app-info {
+  margin-bottom: @space-xl;
+  padding: @space-lg;
+  background: @color-bg-subtle;
+  border-radius: @radius-md;
+  border: 1px solid @color-border-light;
+
+  .info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: @space-md;
+    padding: @space-sm 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid @color-border-light;
     }
   }
 
+  .info-label {
+    font-size: 13px;
+    color: @color-text-muted;
+    flex-shrink: 0;
+  }
+
+  .info-value {
+    font-size: 14px;
+    color: @color-text;
+    font-weight: 500;
+    text-align: right;
+  }
+}
+
+.authorize-actions {
+  display: flex;
+  gap: @space-md;
+  align-items: stretch;
+
+  .ant-btn {
+    flex: 1;
+    height: 44px;
+    border-radius: @radius-md;
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .btn-confirm {
+    background: @color-primary;
+    border-color: @color-primary;
+
+    &:hover:not(:disabled) {
+      background: @color-primary-hover;
+      border-color: @color-primary-hover;
+    }
+  }
+
+  .btn-cancel {
+    border-color: @color-border;
+    color: @color-text-secondary;
+
+    &:hover {
+      border-color: @color-primary;
+      color: @color-primary;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .authorize-card {
+    padding: @space-xl @space-lg;
+  }
+
   .authorize-actions {
-    display: flex;
-    justify-content: space-around;
-    gap: 20px;
+    flex-direction: column;
   }
 }
 </style>
