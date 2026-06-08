@@ -168,7 +168,7 @@ export default {
         response_type: 'code',
         token,
       })
-      const authServer = process.env.VUE_APP_AUTH_SERVER_URL || 'http://127.0.0.1:8090'
+      const authServer = process.env.VUE_APP_AUTH_SERVER_URL
       window.location.href = `${authServer}/api/oauth/authorize?${params.toString()}`
     },
     // 登录接口

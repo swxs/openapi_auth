@@ -92,7 +92,7 @@ export default {
           token: token, // 将token作为参数传递
         })
         
-        const authServer = process.env.VUE_APP_AUTH_SERVER_URL || 'http://127.0.0.1:8090'
+        const authServer = process.env.VUE_APP_AUTH_SERVER_URL
         // 重定向到授权服务器，由服务器生成授权码并重定向到客户端
         window.location.href = `${authServer}/api/oauth/authorize?${params.toString()}`
       } catch (error) {
