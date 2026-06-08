@@ -103,6 +103,7 @@ import { register, login, getGithubLoginUrl } from '../api/auth'
 import {
   setToken,
   setRefreshToken,
+  getToken,
   base2obj,
 } from '../utils/auth'
 
@@ -154,6 +155,22 @@ export default {
         scope: urlParams.get('scope') || 'read write',
       }
     },
+    redirectToOAuthAuthorize() {
+      const token = getToken()
+      if (!token) {
+        return
+      }
+      const params = new URLSearchParams({
+        client_id: this.oauthParams.client_id,
+        redirect_uri: this.oauthParams.redirect_uri,
+        state: this.oauthParams.state,
+        scope: this.oauthParams.scope,
+        response_type: 'code',
+        token,
+      })
+      const authServer = process.env.VUE_APP_AUTH_SERVER_URL || 'http://127.0.0.1:8090'
+      window.location.href = `${authServer}/api/oauth/authorize?${params.toString()}`
+    },
     // 登录接口
     async SignIn() {
       this.verify('identifier')
@@ -175,15 +192,7 @@ export default {
             
             // 如果是OAuth流程，重定向到授权确认页面
             if (this.isOAuthFlow) {
-              // 重定向到授权确认页面，带上OAuth参数
-              const params = new URLSearchParams({
-                client_id: this.oauthParams.client_id,
-                redirect_uri: this.oauthParams.redirect_uri,
-                state: this.oauthParams.state,
-                scope: this.oauthParams.scope,
-              })
-              // 使用replace避免浏览器历史记录问题
-              this.$router.replace(`/authorize?${params.toString()}`)
+              this.redirectToOAuthAuthorize()
             } else {
               // 非OAuth流程，显示成功消息
               this.$message.success('登录成功')
@@ -223,13 +232,7 @@ export default {
               
               // 如果是OAuth流程，重定向到授权确认页面
               if (this.isOAuthFlow) {
-                const params = new URLSearchParams({
-                  client_id: this.oauthParams.client_id,
-                  redirect_uri: this.oauthParams.redirect_uri,
-                  state: this.oauthParams.state,
-                  scope: this.oauthParams.scope,
-                })
-                this.$router.replace(`/authorize?${params.toString()}`)
+                this.redirectToOAuthAuthorize()
               } else {
                 this.$message.success('注册并登录成功')
               }
@@ -295,13 +298,7 @@ export default {
 
         // 如果是OAuth流程，重定向到授权确认页面
         if (this.isOAuthFlow) {
-          const params = new URLSearchParams({
-            client_id: this.oauthParams.client_id,
-            redirect_uri: this.oauthParams.redirect_uri,
-            state: this.oauthParams.state,
-            scope: this.oauthParams.scope,
-          })
-          this.$router.replace(`/authorize?${params.toString()}`)
+          this.redirectToOAuthAuthorize()
         } else {
           // 清除URL参数
           window.history.replaceState({}, document.title, window.location.pathname)
@@ -310,13 +307,16 @@ export default {
     },
   },
   created() {
-    // 从URL参数中获取OAuth参数
     this.parseOAuthParams()
-    
-    // 检查是否是GitHub回调
+
     const urlParams = new URLSearchParams(window.location.search)
     if (urlParams.get('token') && urlParams.get('refresh_token')) {
       this.handleGithubCallback()
+      return
+    }
+
+    if (this.isOAuthFlow && getToken()) {
+      this.redirectToOAuthAuthorize()
     }
   },
   mounted() {},
