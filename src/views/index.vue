@@ -23,7 +23,20 @@
               </template>
             </a-input>
           </a-form-item>
-          <a-form-item class="form-item form-item-inline" v-if="ttype === 2">
+          <a-form-item class="form-item form-item-inline">
+            <a-input
+              id="email"
+              class="modern-input"
+              v-model:value="logins.email"
+              placeholder="邮箱（注册必填）"
+              allow-clear
+            >
+              <template #prefix>
+                <MailOutlined class="input-prefix-icon" />
+              </template>
+            </a-input>
+          </a-form-item>
+          <a-form-item class="form-item form-item-inline">
             <a-input-password
               id="credential"
               class="modern-input"
@@ -98,7 +111,7 @@
 </template>
 
 <script>
-import { UserOutlined, LockOutlined } from '@ant-design/icons-vue'
+import { UserOutlined, LockOutlined, MailOutlined } from '@ant-design/icons-vue'
 import { register, login, getGithubLoginUrl } from '../api/auth'
 import {
   setToken,
@@ -109,15 +122,16 @@ import {
 
 export default {
   name: 'index',
-  components: { UserOutlined, LockOutlined },
+  components: { UserOutlined, LockOutlined, MailOutlined },
   data() {
     return {
       loadingSignIn: false,
       loadingSignUp: false,
       loadingGithub: false,
-      ttype: 2,
+      ttype: 1,
       logins: {
         identifier: '',
+        email: '',
         credential: '',
       },
       rules: {
@@ -180,7 +194,7 @@ export default {
       } else {
         this.loadingSignIn = true
         try {
-          let loginInfo = { ttype: this.ttype, ...this.logins }
+          let loginInfo = { ttype: this.ttype, identifier: this.logins.identifier, credential: this.logins.credential }
           let { status, code, data, message } = await login(loginInfo)
           
           if (code == 0) {
@@ -199,6 +213,11 @@ export default {
               // 可以重定向到其他页面
               // this.$router.push('/')
             }
+          } else if (code === 403002) {
+            this.$message.warning(message || '邮箱未验证，请查收邮件或重发验证')
+            if (this.logins.email) {
+              this.$router.push({ path: '/check-email', query: { email: this.logins.email } })
+            }
           } else {
             this.$message.error(message || '登录失败')
           }
@@ -213,34 +232,23 @@ export default {
     async SignUp() {
       this.verify('identifier')
       this.verify('credential')
-      if (!this.logins.identifier || !this.logins.credential) {
+      if (!this.logins.identifier || !this.logins.email || !this.logins.credential) {
+        this.$message.warning('请填写用户名、邮箱和密码')
         return false
       } else {
         this.loadingSignUp = true
         try {
-          let loginInfo = { ttype: this.ttype, ...this.logins }
-          let { code: registerCode, data: registerData, msg: registerMsg } = await register(loginInfo)
-          
-          if (registerCode == 0) {
-            // 注册成功后自动登录
-            let { code, data, msg } = await login(loginInfo)
-            if (code == 0) {
-              let token = data.token
-              let refreshToken = data.refresh_token
-              setToken(token)
-              setRefreshToken(refreshToken)
-              
-              // 如果是OAuth流程，重定向到授权确认页面
-              if (this.isOAuthFlow) {
-                this.redirectToOAuthAuthorize()
-              } else {
-                this.$message.success('注册并登录成功')
-              }
-            } else {
-              this.$message.error('注册成功，但登录失败')
-            }
+          let { code, message } = await register({
+            username: this.logins.identifier,
+            email: this.logins.email,
+            password: this.logins.credential,
+          })
+
+          if (code == 0) {
+            this.$message.success('注册成功，请查收验证邮件')
+            this.$router.push({ path: '/check-email', query: { email: this.logins.email } })
           } else {
-            this.$message.error(registerMsg || '注册失败')
+            this.$message.error(message || '注册失败')
           }
         } catch (error) {
           console.error('注册失败:', error)
@@ -261,7 +269,7 @@ export default {
       }
     },
     handleForgetPassword() {
-      this.$message.info('忘记密码功能开发中...')
+      this.$router.push('/forgot-password')
     },
     // GitHub登录
     async githubLogin() {
