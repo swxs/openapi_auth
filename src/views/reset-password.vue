@@ -22,6 +22,7 @@
 
 <script>
 import { resetPassword } from '../api/auth'
+import { navQueryFromRoute } from '../utils/oauth'
 
 export default {
   name: 'ResetPassword',
@@ -57,7 +58,7 @@ export default {
         })
         if (code === 0) {
           this.$message.success('密码重置成功，请登录')
-          this.$router.push('/')
+          this.$router.push({ path: '/', query: navQueryFromRoute(this.$route) })
         } else {
           this.$message.error(message || '重置失败')
         }

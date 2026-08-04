@@ -18,6 +18,7 @@
 
 <script>
 import { resendVerification } from '../api/auth'
+import { navQueryFromRoute } from '../utils/oauth'
 
 export default {
   name: 'CheckEmail',
@@ -48,7 +49,7 @@ export default {
       }
     },
     goLogin() {
-      this.$router.push('/')
+      this.$router.push({ path: '/', query: navQueryFromRoute(this.$route) })
     },
   },
 }

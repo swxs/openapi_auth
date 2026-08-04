@@ -23,6 +23,7 @@
 
 <script>
 import { forgotPassword } from '../api/auth'
+import { navQueryFromRoute } from '../utils/oauth'
 
 export default {
   name: 'ForgotPassword',
@@ -48,7 +49,10 @@ export default {
           const msg = data?.message || message || '请求已提交'
           this.$message.success(msg)
           if (data?.unactivated) {
-            this.$router.push({ path: '/check-email', query: { email: this.form.email } })
+            this.$router.push({
+              path: '/check-email',
+              query: navQueryFromRoute(this.$route, { email: this.form.email }),
+            })
           }
         } else {
           this.$message.error(message || '提交失败')
@@ -60,7 +64,7 @@ export default {
       }
     },
     goLogin() {
-      this.$router.push('/')
+      this.$router.push({ path: '/', query: navQueryFromRoute(this.$route) })
     },
   },
 }

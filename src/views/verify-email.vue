@@ -14,6 +14,7 @@
 
 <script>
 import { verifyEmail } from '../api/auth'
+import { navQueryFromRoute } from '../utils/oauth'
 
 export default {
   name: 'VerifyEmail',
@@ -52,7 +53,7 @@ export default {
   },
   methods: {
     goLogin() {
-      this.$router.push('/')
+      this.$router.push({ path: '/', query: navQueryFromRoute(this.$route) })
     },
   },
 }

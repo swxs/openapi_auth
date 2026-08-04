@@ -108,3 +108,9 @@ dist
 
 # TernJS port file
 .tern-port
+
+# openwiki
+.github/workflows/openwiki-update.yml
+openwiki/
+AGENTS.md
+CLAUDE.md
