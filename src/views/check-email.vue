@@ -5,12 +5,14 @@
         <h1 class="login-title">请查收邮件</h1>
         <p class="login-subtitle">我们已向您的邮箱发送了验证链接，请点击链接完成注册</p>
       </header>
-      <div class="check-email-body">
+      <div class="login-body">
         <p v-if="email" class="email-hint">邮箱：{{ email }}</p>
-        <a-button type="primary" class="action-btn" :loading="loading" @click="handleResend">
-          重新发送验证邮件
-        </a-button>
-        <a-button class="action-btn secondary" @click="goLogin">返回登录</a-button>
+        <div class="form-actions">
+          <a-button type="primary" class="action-btn submit-btn" :loading="loading" @click="handleResend">
+            重新发送验证邮件
+          </a-button>
+          <a-button class="action-btn secondary" @click="goLogin">返回登录</a-button>
+        </div>
       </div>
     </div>
   </div>
@@ -57,16 +59,4 @@ export default {
 
 <style scoped lang="less">
 @import '../styles/login-shared.less';
-.check-email-body {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-.email-hint {
-  color: #666;
-  font-size: 14px;
-}
-.action-btn.secondary {
-  background: #f5f5f5;
-}
 </style>

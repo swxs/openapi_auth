@@ -5,9 +5,18 @@
         <h1 class="login-title">{{ title }}</h1>
         <p class="login-subtitle">{{ subtitle }}</p>
       </header>
-      <div v-if="loading" class="status-body">验证中...</div>
-      <a-button v-else-if="success" type="primary" class="action-btn" @click="goLogin">前往登录</a-button>
-      <a-button v-else class="action-btn" @click="goLogin">返回登录</a-button>
+      <div class="login-body">
+        <div v-if="loading" class="status-body">验证中…</div>
+        <div v-else class="form-actions">
+          <a-button
+            :type="success ? 'primary' : 'default'"
+            :class="success ? 'action-btn submit-btn' : 'action-btn secondary'"
+            @click="goLogin"
+          >
+            {{ success ? '前往登录' : '返回登录' }}
+          </a-button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -61,8 +70,4 @@ export default {
 
 <style scoped lang="less">
 @import '../styles/login-shared.less';
-.status-body {
-  text-align: center;
-  color: #666;
-}
 </style>

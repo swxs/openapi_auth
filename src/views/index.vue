@@ -388,140 +388,10 @@ export default {
 </script>
 
 <style lang="less" scoped>
+@import '../styles/login-shared.less';
 @import '../assets/style/variables.less';
 
-.login-container {
-  min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: @space-lg;
-  background-color: @color-bg-page;
-}
-
-.login-card {
-  width: 100%;
-  max-width: 380px;
-  padding: @space-xl;
-  background: @color-bg;
-  border-radius: @radius-xl;
-  box-shadow: @shadow-lg;
-  border: 1px solid @color-border-light;
-  animation: cardIn 0.4s @ease-out;
-}
-
-@keyframes cardIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.login-header {
-  text-align: center;
-  margin-bottom: @space-xl;
-
-  .login-title {
-    margin: 0 0 @space-xs 0;
-    font-size: 24px;
-    font-weight: 600;
-    color: @color-text;
-    letter-spacing: -0.02em;
-  }
-
-  .login-subtitle {
-    margin: 0;
-    font-size: 13px;
-    color: @color-text-secondary;
-  }
-}
-
 .login-form {
-  .input-group {
-    border-radius: @radius-md;
-    overflow: hidden;
-    background: @color-bg;
-    transition: border-color @duration-normal @ease-out, box-shadow @duration-fast @ease-out;
-
-    &:focus-within {
-      border-color: @color-primary;
-      box-shadow: 0 0 0 2px fade(@color-primary, 12%);
-    }
-
-    :deep(.ant-form-item),
-    :deep(.ant-form-item-control),
-    :deep(.ant-form-item-control-input) {
-      border: none !important;
-      background: transparent !important;
-    }
-
-    :deep(.ant-form-item-explain-error) {
-      padding: 0 @space-sm @space-xs;
-      font-size: 12px;
-    }
-  }
-
-  .form-item-inline {
-    margin-bottom: 0 !important;
-
-    :deep(.ant-form-item-control-input) {
-      min-height: auto;
-    }
-  }
-
-  .input-group .form-item-inline + .form-item-inline {
-    margin-top: 8px;
-    padding-top: 8px;
-    border-top: none !important;
-  }
-
-  .input-group .modern-input {
-    :deep(.ant-input-affix-wrapper),
-    :deep(.ant-input-password),
-    :deep(.ant-input) {
-      height: 40px;
-      min-height: 40px;
-      border: none !important;
-      border-radius: 0 !important;
-      box-shadow: none !important;
-      background: transparent !important;
-      padding: 0 !important;
-
-      &:hover,
-      &:focus,
-      &.ant-input-focused {
-        border: none !important;
-        box-shadow: none !important;
-        background: transparent !important;
-      }
-    }
-
-    :deep(.ant-input) {
-      padding: 8px 10px 8px 20px !important;
-      font-size: 15px;
-    }
-
-    :deep(.ant-input-password .ant-input) {
-      padding: 8px 10px 8px 20px !important;
-    }
-
-    :deep(.ant-input-prefix) {
-      margin-right: 8px;
-      padding-left: 0;
-      color: @color-text-muted;
-      font-size: 15px;
-    }
-
-    :deep(.ant-input-suffix) {
-      color: @color-text-muted;
-      padding-right: 0;
-    }
-  }
-
   .form-links {
     display: flex;
     justify-content: space-between;
@@ -557,44 +427,6 @@ export default {
         &:hover {
           color: @color-primary-hover;
           text-decoration: underline;
-        }
-      }
-    }
-  }
-
-  .form-actions {
-    margin-bottom: @space-md;
-
-    .action-btn {
-      width: 100%;
-      height: 42px;
-      min-height: 42px;
-      border-radius: @radius-md;
-      font-size: 14px;
-      font-weight: 500;
-      transition: border-color @duration-normal @ease-out,
-        background-color @duration-normal @ease-out,
-        color @duration-normal @ease-out,
-        box-shadow @duration-fast @ease-out;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0;
-      line-height: 1;
-
-      &.submit-btn {
-        background: @color-primary;
-        color: #fff;
-
-        &:hover:not(:disabled) {
-          background: @color-primary-hover;
-          box-shadow: 0 4px 12px fade(@color-primary, 35%);
-        }
-
-        &:disabled {
-          opacity: 0.5;
-          cursor: not-allowed;
         }
       }
     }
@@ -656,7 +488,7 @@ export default {
       height: 18px;
       min-width: 18px;
       min-height: 18px;
-      margin-right: 8px;
+      margin-right: @space-sm;
       fill: currentColor;
       flex-shrink: 0;
     }
@@ -667,43 +499,6 @@ export default {
       line-height: 1;
       white-space: nowrap;
     }
-  }
-}
-
-@media (max-width: 768px) {
-  .login-container {
-    padding: @space-md;
-    align-items: flex-start;
-    padding-top: 48px;
-  }
-
-  .login-card {
-    padding: @space-xl @space-lg;
-  }
-
-  .login-header {
-    margin-bottom: @space-xl;
-  }
-}
-
-@media (max-width: 480px) {
-  .login-container {
-    padding: @space-sm;
-    padding-top: 32px;
-  }
-
-  .login-card {
-    padding: @space-lg @space-md;
-  }
-
-  .login-header .login-title {
-    font-size: 22px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .login-card {
-    animation: none;
   }
 }
 </style>

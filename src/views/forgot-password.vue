@@ -6,27 +6,56 @@
         <p class="login-subtitle">输入用户名和注册邮箱</p>
       </header>
       <a-form class="login-form" :model="form">
-        <a-form-item>
-          <a-input v-model:value="form.username" placeholder="用户名" allow-clear />
-        </a-form-item>
-        <a-form-item>
-          <a-input v-model:value="form.email" placeholder="注册邮箱" allow-clear />
-        </a-form-item>
-        <a-button type="primary" class="action-btn" :loading="loading" @click="handleSubmit">
-          发送邮件
-        </a-button>
-        <a-button class="action-btn secondary" @click="goLogin">返回登录</a-button>
+        <div class="input-group">
+          <a-form-item class="form-item form-item-inline">
+            <a-input
+              v-model:value="form.username"
+              class="modern-input"
+              name="username"
+              autocomplete="username"
+              placeholder="用户名"
+              allow-clear
+            >
+              <template #prefix>
+                <UserOutlined class="input-prefix-icon" aria-hidden="true" />
+              </template>
+            </a-input>
+          </a-form-item>
+          <a-form-item class="form-item form-item-inline">
+            <a-input
+              v-model:value="form.email"
+              class="modern-input"
+              name="email"
+              type="email"
+              autocomplete="email"
+              placeholder="注册邮箱"
+              allow-clear
+            >
+              <template #prefix>
+                <MailOutlined class="input-prefix-icon" aria-hidden="true" />
+              </template>
+            </a-input>
+          </a-form-item>
+        </div>
+        <div class="form-actions">
+          <a-button type="primary" class="action-btn submit-btn" :loading="loading" @click="handleSubmit">
+            发送邮件
+          </a-button>
+          <a-button class="action-btn secondary" @click="goLogin">返回登录</a-button>
+        </div>
       </a-form>
     </div>
   </div>
 </template>
 
 <script>
+import { UserOutlined, MailOutlined } from '@ant-design/icons-vue'
 import { forgotPassword } from '../api/auth'
 import { navQueryFromRoute } from '../utils/oauth'
 
 export default {
   name: 'ForgotPassword',
+  components: { UserOutlined, MailOutlined },
   data() {
     return {
       loading: false,
@@ -72,8 +101,4 @@ export default {
 
 <style scoped lang="less">
 @import '../styles/login-shared.less';
-.action-btn.secondary {
-  margin-top: 8px;
-  background: #f5f5f5;
-}
 </style>

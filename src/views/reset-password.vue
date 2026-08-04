@@ -6,26 +6,52 @@
         <p class="login-subtitle">请输入新密码</p>
       </header>
       <a-form class="login-form" :model="form">
-        <a-form-item>
-          <a-input-password v-model:value="form.new_password" placeholder="新密码" />
-        </a-form-item>
-        <a-form-item>
-          <a-input-password v-model:value="form.confirm_password" placeholder="确认新密码" />
-        </a-form-item>
-        <a-button type="primary" class="action-btn" :loading="loading" @click="handleSubmit">
-          确认重置
-        </a-button>
+        <div class="input-group">
+          <a-form-item class="form-item form-item-inline">
+            <a-input-password
+              v-model:value="form.new_password"
+              class="modern-input"
+              name="new_password"
+              autocomplete="new-password"
+              placeholder="新密码"
+            >
+              <template #prefix>
+                <LockOutlined class="input-prefix-icon" aria-hidden="true" />
+              </template>
+            </a-input-password>
+          </a-form-item>
+          <a-form-item class="form-item form-item-inline">
+            <a-input-password
+              v-model:value="form.confirm_password"
+              class="modern-input"
+              name="confirm_password"
+              autocomplete="new-password"
+              placeholder="确认新密码"
+            >
+              <template #prefix>
+                <LockOutlined class="input-prefix-icon" aria-hidden="true" />
+              </template>
+            </a-input-password>
+          </a-form-item>
+        </div>
+        <div class="form-actions">
+          <a-button type="primary" class="action-btn submit-btn" :loading="loading" @click="handleSubmit">
+            确认重置
+          </a-button>
+        </div>
       </a-form>
     </div>
   </div>
 </template>
 
 <script>
+import { LockOutlined } from '@ant-design/icons-vue'
 import { resetPassword } from '../api/auth'
 import { navQueryFromRoute } from '../utils/oauth'
 
 export default {
   name: 'ResetPassword',
+  components: { LockOutlined },
   data() {
     return {
       loading: false,
